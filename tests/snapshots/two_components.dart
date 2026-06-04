@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color ceeeeee = Color(0xFFEEEEEE);
+}
+
+abstract final class AppSpacing {
+  static const double s8 = 8;
+}
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -8,7 +16,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Column(
-          spacing: 8,
+          spacing: AppSpacing.s8,
           children: [
             Text(
               'Home',
@@ -27,7 +35,7 @@ class Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFFEEEEEE),
+      color: AppColors.ceeeeee,
       child: Column(
         children: [
           Text(

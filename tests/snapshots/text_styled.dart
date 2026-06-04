@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color c111111 = Color(0xFF111111);
+}
+
+abstract final class AppTextStyles {
+  static const TextStyle s24w700 = TextStyle(fontSize: 24, fontWeight: FontWeight.w700);
+}
+
 class TestScreen extends StatelessWidget {
   const TestScreen({super.key});
 
@@ -11,11 +19,7 @@ class TestScreen extends StatelessWidget {
           children: [
             Text(
               'Hello',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF111111),
-              ),
+              style: AppTextStyles.s24w700.copyWith(color: AppColors.c111111),
               textAlign: TextAlign.center,
             ),
           ],

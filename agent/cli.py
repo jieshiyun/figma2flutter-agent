@@ -34,7 +34,18 @@ def _load_figma(args: argparse.Namespace) -> tuple[dict, dict | None]:
             raise FigmaError("the Figma URL must include a node-id=... parameter")
         return figma_client.fetch_node(file_key, node_id, args.figma_token)
     with open(args.input) as f:
-        return json.load(f), None
+        data = json.load(f)
+    # Accept a saved full /nodes response (e.g. figma_raw.json) as well as a
+    # bare document node: unwrap the document and keep the raw for its Styles.
+    if isinstance(data, dict) and "nodes" in data and data.get("type") is None:
+        nodes = data.get("nodes") or {}
+        entry = next(
+            (e for e in nodes.values() if isinstance(e, dict) and "document" in e),
+            None,
+        )
+        if entry:
+            return entry["document"], data
+    return data, None
 
 
 def _maybe_download_images(
@@ -140,7 +151,8 @@ def main(argv: list[str] | None = None) -> int:
     warnings: list[str] = []
     try:
         figma, raw = _load_figma(args)
-        ir = ir_parser.parse(figma, warnings)
+        styles = figma_client.extract_styles(raw) if raw else None
+        ir = ir_parser.parse(figma, warnings, styles=styles)
         _maybe_download_images(args, ir, warnings)
         plan = planner.plan_with_llm(ir, client) if args.llm else planner.plan(ir)
         dart = codegen.generate(plan)

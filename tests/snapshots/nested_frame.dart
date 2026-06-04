@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color cf0f0f0 = Color(0xFFF0F0F0);
+}
+
+abstract final class AppSpacing {
+  static const double s4 = 4;
+  static const double s8 = 8;
+}
+
 class TestScreen extends StatelessWidget {
   const TestScreen({super.key});
 
@@ -11,13 +20,13 @@ class TestScreen extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Color(0xFFF0F0F0),
+                color: AppColors.cf0f0f0,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(AppSpacing.s8),
                 child: Column(
-                  spacing: 4,
+                  spacing: AppSpacing.s4,
                   children: [
                     Text(
                       'Inner',

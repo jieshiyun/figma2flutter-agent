@@ -102,7 +102,8 @@ def test_rectangle_border_renders_box_decoration() -> None:
     dart = _gen(ir)
     assert "decoration: BoxDecoration(" in dart
     assert "border: Border.all(" in dart
-    assert "color: Color(0xFFE5E5EA)" in dart
+    assert "color: AppColors.ce5e5ea" in dart
+    assert "static const Color ce5e5ea = Color(0xFFE5E5EA);" in dart
     assert "width: 1" in dart
 
 
@@ -121,7 +122,8 @@ def test_frame_border_without_radius_uses_decoration() -> None:
     dart = _gen(ir)
     assert "decoration: BoxDecoration(" in dart
     assert "border: Border.all(" in dart
-    assert "color: Color(0xFF000000)" in dart
+    assert "color: AppColors.c000000" in dart
+    assert "static const Color c000000 = Color(0xFF000000);" in dart
     # width is optional; omitted here, so no width arg should appear
     assert "width:" not in dart
 
@@ -207,7 +209,8 @@ def test_ellipse_renders_circle_container() -> None:
     )
     dart = _gen(ir)
     assert "shape: BoxShape.circle" in dart
-    assert "color: Color(0xFFFF0000)" in dart
+    assert "color: AppColors.cff0000" in dart
+    assert "static const Color cff0000 = Color(0xFFFF0000);" in dart
     assert "border: Border.all(" in dart
     assert "width: 80" in dart
 

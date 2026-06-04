@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color black = Color(0xFF000000);
+  static const Color cbdc5cd = Color(0xFFBDC5CD);
+  static const Color cfafafa = Color(0xFFFAFAFA);
+  static const Color gray01 = Color(0xFFF6F6F6);
+  static const Color gray02 = Color(0xFFE8E8E8);
+  static const Color gray03 = Color(0xFFBDBDBD);
+  static const Color greenPrimary = Color(0xFF5DB075);
+  static const Color white = Color(0xFFFFFFFF);
+}
+
+abstract final class AppTextStyles {
+  static const TextStyle s14w400 = TextStyle(fontSize: 14, fontWeight: FontWeight.w400);
+  static const TextStyle s16w500 = TextStyle(fontSize: 16, fontWeight: FontWeight.w500);
+  static const TextStyle s16w600 = TextStyle(fontSize: 16, fontWeight: FontWeight.w600);
+  static const TextStyle s30w600 = TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+}
+
 class ProfilePosts extends StatelessWidget {
   const ProfilePosts({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Stack(
           children: [
@@ -16,7 +34,7 @@ class ProfilePosts extends StatelessWidget {
               child: Container(
                 width: 376,
                 height: 245,
-                color: Color(0xFF5DB075),
+                color: AppColors.greenPrimary,
               ),
             ),
             Positioned(
@@ -27,12 +45,8 @@ class ProfilePosts extends StatelessWidget {
                 height: 158,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/80ba23780f992d6275fd95498e163d7b4c6dd13a.png'),
-                    fit: BoxFit.cover,
-                  ),
                   border: Border.all(
-                    color: Color(0xFFFFFFFF),
+                    color: AppColors.white,
                     width: 4,
                   ),
                 ),
@@ -106,7 +120,7 @@ class BG extends StatelessWidget {
             child: Container(
               width: 375,
               height: 44,
-              color: Color(0xFF000000),
+              color: AppColors.black,
             ),
           ),
         ],
@@ -132,7 +146,7 @@ class Battery extends StatelessWidget {
               width: 18,
               height: 7.333333492279053,
               decoration: BoxDecoration(
-                color: Color(0xFFFFFFFF),
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(1.3333333730697632),
               ),
             ),
@@ -261,11 +275,7 @@ class PageHeader extends StatelessWidget {
             top: 8,
             child: Text(
               'Logout',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFFFFFF),
-              ),
+              style: AppTextStyles.s16w500.copyWith(color: AppColors.white),
               textAlign: TextAlign.right,
             ),
           ),
@@ -274,11 +284,7 @@ class PageHeader extends StatelessWidget {
             top: 0,
             child: Text(
               'Profile',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFFFFFFFF),
-              ),
+              style: AppTextStyles.s30w600.copyWith(color: AppColors.white),
               textAlign: TextAlign.center,
             ),
           ),
@@ -292,11 +298,7 @@ class PageHeader extends StatelessWidget {
             top: 8,
             child: Text(
               'Settings',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFFFFFF),
-              ),
+              style: AppTextStyles.s16w500.copyWith(color: AppColors.white),
               textAlign: TextAlign.left,
             ),
           ),
@@ -321,11 +323,7 @@ class NameBio extends StatelessWidget {
             top: 0,
             child: Text(
               'Victoria Robertson',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF000000),
-              ),
+              style: AppTextStyles.s30w600.copyWith(color: AppColors.black),
               textAlign: TextAlign.center,
             ),
           ),
@@ -334,11 +332,7 @@ class NameBio extends StatelessWidget {
             top: 44,
             child: Text(
               'A mantra goes here',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF000000),
-              ),
+              style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
               textAlign: TextAlign.center,
             ),
           ),
@@ -368,7 +362,7 @@ class LeftSelected extends StatelessWidget {
               width: 171.5,
               height: 46,
               decoration: BoxDecoration(
-                color: Color(0xFFFFFFFF),
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -378,11 +372,7 @@ class LeftSelected extends StatelessWidget {
             top: 14,
             child: Text(
               'Posts',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF5DB075),
-              ),
+              style: AppTextStyles.s16w600.copyWith(color: AppColors.greenPrimary),
               textAlign: TextAlign.center,
             ),
           ),
@@ -412,7 +402,7 @@ class RightSelected extends StatelessWidget {
               width: 171.5,
               height: 46,
               decoration: BoxDecoration(
-                color: Color(0xFFFFFFFF),
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -422,11 +412,7 @@ class RightSelected extends StatelessWidget {
             top: 14,
             child: Text(
               'Search',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF5DB075),
-              ),
+              style: AppTextStyles.s16w600.copyWith(color: AppColors.greenPrimary),
               textAlign: TextAlign.center,
             ),
           ),
@@ -453,10 +439,10 @@ class SegmentedControlStructure extends StatelessWidget {
               width: 343,
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFFF6F6F6),
+                color: AppColors.gray01,
                 borderRadius: BorderRadius.circular(100),
                 border: Border.all(
-                  color: Color(0xFFE8E8E8),
+                  color: AppColors.gray02,
                   width: 1,
                 ),
               ),
@@ -467,11 +453,7 @@ class SegmentedControlStructure extends StatelessWidget {
             top: 16,
             child: Text(
               'Photos',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFBDBDBD),
-              ),
+              style: AppTextStyles.s16w500.copyWith(color: AppColors.gray03),
               textAlign: TextAlign.center,
             ),
           ),
@@ -480,11 +462,7 @@ class SegmentedControlStructure extends StatelessWidget {
             top: 16,
             child: Text(
               'Search',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFBDBDBD),
-              ),
+              style: AppTextStyles.s16w500.copyWith(color: AppColors.gray03),
               textAlign: TextAlign.center,
             ),
           ),
@@ -542,7 +520,7 @@ class ContentContentBlockSmall extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFFF6F6F6),
+                color: AppColors.gray01,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -552,11 +530,7 @@ class ContentContentBlockSmall extends StatelessWidget {
             top: 0,
             child: Text(
               'Header',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF000000),
-              ),
+              style: AppTextStyles.s16w600.copyWith(color: AppColors.black),
               textAlign: TextAlign.left,
             ),
           ),
@@ -565,11 +539,7 @@ class ContentContentBlockSmall extends StatelessWidget {
             top: 2,
             child: Text(
               '8m ago',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFFBDBDBD),
-              ),
+              style: AppTextStyles.s14w400.copyWith(color: AppColors.gray03),
               textAlign: TextAlign.right,
             ),
           ),
@@ -578,11 +548,7 @@ class ContentContentBlockSmall extends StatelessWidget {
             top: 27,
             child: Text(
               'He\'ll want to use your yacht, and I don\'t want this thing smelling like fish.',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF000000),
-              ),
+              style: AppTextStyles.s14w400.copyWith(color: AppColors.black),
               textAlign: TextAlign.left,
             ),
           ),
@@ -612,7 +578,7 @@ class HomeIndicator extends StatelessWidget {
               width: 134,
               height: 5,
               decoration: BoxDecoration(
-                color: Color(0xFF000000),
+                color: AppColors.black,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -639,7 +605,7 @@ class IPhoneUI extends StatelessWidget {
             child: Container(
               width: 375,
               height: 83,
-              color: Color(0xFFFAFAFA),
+              color: AppColors.cfafafa,
             ),
           ),
           Positioned(
@@ -673,7 +639,7 @@ class Tabs extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Color(0xFF5DB075),
+                color: AppColors.greenPrimary,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -685,7 +651,7 @@ class Tabs extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Color(0xFFE8E8E8),
+                color: AppColors.gray02,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -697,7 +663,7 @@ class Tabs extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Color(0xFFE8E8E8),
+                color: AppColors.gray02,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -709,7 +675,7 @@ class Tabs extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Color(0xFFE8E8E8),
+                color: AppColors.gray02,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -721,7 +687,7 @@ class Tabs extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Color(0xFFE8E8E8),
+                color: AppColors.gray02,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
@@ -758,7 +724,7 @@ class IOSBottomBar5Tabs extends StatelessWidget {
             child: Container(
               width: 375,
               height: 0.5,
-              color: Color(0xFFBDC5CD),
+              color: AppColors.cbdc5cd,
             ),
           ),
         ],

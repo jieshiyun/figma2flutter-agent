@@ -66,11 +66,15 @@ def plan(ir: dict) -> dict:
     root_component = {"name": root_name, "root": extract(root)}
     components.insert(0, root_component)
     components = _dedupe(components, root_name)
-    return {
+    out: dict[str, Any] = {
         "version": PLAN_VERSION,
         "rootComponent": root_name,
         "components": components,
     }
+    # Carry design tokens (e.g. semantic color names) through to codegen.
+    if ir.get("tokens"):
+        out["tokens"] = ir["tokens"]
+    return out
 
 
 def _dedupe(components: list[dict], root_name: str) -> list[dict]:
@@ -170,6 +174,8 @@ def plan_with_llm(ir: dict, client: LLMClient) -> dict:
     except json.JSONDecodeError as exc:
         raise ValueError(f"LLM returned invalid JSON: {exc}") from exc
     _validate_plan_shape(result)
+    if ir.get("tokens") and "tokens" not in result:
+        result["tokens"] = ir["tokens"]
     return result
 
 

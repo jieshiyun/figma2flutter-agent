@@ -65,3 +65,28 @@ def test_fetch_node_missing_node_raises(monkeypatch: pytest.MonkeyPatch) -> None
 def test_fetch_node_requires_node_id() -> None:
     with pytest.raises(FigmaError, match="node id is required"):
         figma_client.fetch_node("key", "", "tok")
+
+
+def test_extract_styles_returns_top_level_style_map() -> None:
+    raw = {
+        "nodes": {
+            "1:2": {
+                "document": {"id": "1:2", "type": "FRAME"},
+                "styles": {
+                    "144:616": {"name": "Green/Primary", "styleType": "FILL"}
+                },
+            }
+        }
+    }
+    styles = figma_client.extract_styles(raw, "1:2")
+    assert styles["144:616"]["name"] == "Green/Primary"
+
+
+def test_extract_styles_falls_back_to_first_entry() -> None:
+    raw = {"nodes": {"9:9": {"document": {}, "styles": {"s": {"name": "X"}}}}}
+    assert figma_client.extract_styles(raw) == {"s": {"name": "X"}}
+
+
+def test_extract_styles_missing_returns_empty() -> None:
+    assert figma_client.extract_styles({"nodes": {}}) == {}
+    assert figma_client.extract_styles({}) == {}

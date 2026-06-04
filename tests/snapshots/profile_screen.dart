@@ -1,27 +1,43 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color c0a84ff = Color(0xFF0A84FF);
+  static const Color c111111 = Color(0xFF111111);
+  static const Color ce5e5ea = Color(0xFFE5E5EA);
+  static const Color cf5f5f7 = Color(0xFFF5F5F7);
+  static const Color cffffff = Color(0xFFFFFFFF);
+}
+
+abstract final class AppSpacing {
+  static const double s12 = 12;
+  static const double s16 = 16;
+  static const double s24 = 24;
+  static const double s8 = 8;
+}
+
+abstract final class AppTextStyles {
+  static const TextStyle s16w600 = TextStyle(fontSize: 16, fontWeight: FontWeight.w600);
+  static const TextStyle s24w700 = TextStyle(fontSize: 24, fontWeight: FontWeight.w700);
+}
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: AppColors.cffffff,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
-            spacing: 16,
+            spacing: AppSpacing.s16,
             children: [
               Text(
                 'Welcome back',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF111111),
-                ),
+                style: AppTextStyles.s24w700.copyWith(color: AppColors.c111111),
                 textAlign: TextAlign.left,
               ),
               ClipRRect(
@@ -37,9 +53,9 @@ class ProfileScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF0A84FF),
-                  foregroundColor: Color(0xFFFFFFFF),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  backgroundColor: AppColors.c0a84ff,
+                  foregroundColor: AppColors.cffffff,
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -63,27 +79,23 @@ class InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFFF5F5F7),
+        color: AppColors.cf5f5f7,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.s16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
-          spacing: 8,
+          spacing: AppSpacing.s8,
           children: [
             Text(
               'Account',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF111111),
-              ),
+              style: AppTextStyles.s16w600.copyWith(color: AppColors.c111111),
             ),
             Container(
               height: 1,
-              color: Color(0xFFE5E5EA),
+              color: AppColors.ce5e5ea,
             ),
           ],
         ),

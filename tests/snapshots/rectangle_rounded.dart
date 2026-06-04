@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color c0a84ff = Color(0xFF0A84FF);
+}
+
 class TestScreen extends StatelessWidget {
   const TestScreen({super.key});
 
@@ -13,7 +17,7 @@ class TestScreen extends StatelessWidget {
               width: 100,
               height: 40,
               decoration: BoxDecoration(
-                color: Color(0xFF0A84FF),
+                color: AppColors.c0a84ff,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),

@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+abstract final class AppColors {
+  static const Color c0a84ff = Color(0xFF0A84FF);
+  static const Color cffffff = Color(0xFFFFFFFF);
+}
+
+abstract final class AppSpacing {
+  static const double s12 = 12;
+  static const double s16 = 16;
+}
+
 class TestScreen extends StatelessWidget {
   const TestScreen({super.key});
 
@@ -12,9 +22,9 @@ class TestScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF0A84FF),
-                foregroundColor: Color(0xFFFFFFFF),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                backgroundColor: AppColors.c0a84ff,
+                foregroundColor: AppColors.cffffff,
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

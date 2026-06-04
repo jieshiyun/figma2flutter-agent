@@ -21,7 +21,11 @@ _TEXT_ALIGN = {"LEFT": "left", "CENTER": "center", "RIGHT": "right"}
 _IMAGE_FIT = {"FILL": "cover", "FIT": "contain", "STRETCH": "fill", "TILE": "cover"}
 
 
-def parse(figma_json: dict, warnings: list[str] | None = None) -> dict:
+def parse(
+    figma_json: dict,
+    warnings: list[str] | None = None,
+    styles: dict | None = None,
+) -> dict:
     """Convert a simplified Figma node tree into Design IR v0.1.
 
     The root node must be a FRAME and becomes the IR `screen`. Supported
@@ -29,11 +33,59 @@ def parse(figma_json: dict, warnings: list[str] | None = None) -> dict:
     skipped (real Figma trees contain VECTOR, GROUP, etc.), and frames
     without auto-layout fall back to a vertical stack. Both cases append a
     human-readable message to `warnings` when one is provided.
+
+    `styles` is the Figma response's top-level Style map (styleId -> meta).
+    When given, published fill Styles are resolved to semantic color names and
+    attached as `ir["tokens"]["colors"]` (hex -> name) for codegen (route B).
     """
     sink = warnings if warnings is not None else []
     if figma_json.get("type") != "FRAME":
         raise ValueError(f"root must be a FRAME, got {figma_json.get('type')!r}")
-    return {"version": IR_VERSION, "root": _parse_screen(figma_json, sink)}
+    ir: dict[str, Any] = {"version": IR_VERSION, "root": _parse_screen(figma_json, sink)}
+    if styles:
+        colors = _collect_color_styles(figma_json, styles)
+        if colors:
+            ir["tokens"] = {"colors": colors}
+    return ir
+
+
+_FILL_STYLE_KEYS = ("fill", "fills")
+_STROKE_STYLE_KEYS = ("stroke", "strokes")
+
+
+def _collect_color_styles(node: dict, styles: dict) -> dict[str, str]:
+    """Walk the tree, mapping each solid color to its published Style name.
+
+    A node links a fill/stroke Style via `node["styles"]` (key -> styleId);
+    the styleId resolves in the top-level map to a FILL Style with a name. The
+    node's own solid fill/stroke gives the hex, so the result is hex -> name.
+    First occurrence wins, keeping the mapping stable and deterministic.
+    """
+    out: dict[str, str] = {}
+    _walk_color_styles(node, styles, out)
+    return out
+
+
+def _walk_color_styles(node: dict, styles: dict, out: dict[str, str]) -> None:
+    refs = node.get("styles") or {}
+    for key in _FILL_STYLE_KEYS:
+        _record_style(refs.get(key), styles, _solid_fill(node), out)
+    for key in _STROKE_STYLE_KEYS:
+        _record_style(refs.get(key), styles, _solid_stroke(node), out)
+    for child in node.get("children") or []:
+        _walk_color_styles(child, styles, out)
+
+
+def _record_style(
+    style_id: Any, styles: dict, hex_str: str | None, out: dict[str, str]
+) -> None:
+    if not style_id or not hex_str:
+        return
+    meta = styles.get(style_id)
+    if isinstance(meta, dict) and meta.get("styleType") == "FILL":
+        name = meta.get("name")
+        if name:
+            out.setdefault(hex_str, name)
 
 
 def _parse_screen(node: dict, warnings: list[str]) -> dict:

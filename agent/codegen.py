@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent.tokens import Tokens
+
 HEADER = "import 'package:flutter/material.dart';"
+
+# Active token registry during a `generate()` call. When set, leaf emitters
+# intern style literals into named constants instead of inlining them; when
+# None (e.g. helpers called directly in tests) they emit plain literals.
+_active: Tokens | None = None
 
 
 def generate(plan: dict) -> str:
@@ -25,8 +32,18 @@ def generate(plan: dict) -> str:
     components = plan.get("components")
     if not components:
         raise ValueError("plan has no components")
-    blocks = [_emit_component(c) for c in components]
-    return f"{HEADER}\n\n" + "\n".join(blocks)
+    global _active
+    color_names = (plan.get("tokens") or {}).get("colors") or {}
+    _active = Tokens(color_names)
+    try:
+        blocks = [_emit_component(c) for c in components]
+        theme = _render_theme(_active)
+    finally:
+        _active = None
+    head = f"{HEADER}\n\n"
+    if theme:
+        head += theme + "\n\n"
+    return head + "\n".join(blocks)
 
 
 def _emit_component(component: dict) -> str:
@@ -100,7 +117,7 @@ def _emit_flex(layout: dict, children: list[dict]) -> str:
     if "justify" in layout:
         args.append(f"mainAxisAlignment: MainAxisAlignment.{layout['justify']}")
     if layout.get("spacing"):
-        args.append(f"spacing: {_num(layout['spacing'])}")
+        args.append(f"spacing: {_space(layout['spacing'])}")
     args.append(_children_arg(children))
     return _call(widget, args)
 
@@ -166,18 +183,39 @@ def _emit_frame(node: dict) -> str:
 
 def _emit_text(node: dict) -> str:
     args: list[str] = [_dart_str(node["text"])]
-    style_args: list[str] = []
-    if "fontSize" in node:
-        style_args.append(f"fontSize: {_num(node['fontSize'])}")
-    if "fontWeight" in node:
-        style_args.append(f"fontWeight: FontWeight.w{int(node['fontWeight'])}")
-    if "color" in node:
-        style_args.append(f"color: {_color(node['color'])}")
-    if style_args:
-        args.append("style: " + _call("TextStyle", style_args))
+    style = _text_style_expr(
+        node.get("fontSize"), node.get("fontWeight"), node.get("color")
+    )
+    if style:
+        args.append("style: " + style)
     if "textAlign" in node:
         args.append(f"textAlign: TextAlign.{node['textAlign']}")
     return _call("Text", args)
+
+
+def _text_style_expr(size: Any, weight: Any, color: str | None) -> str | None:
+    """Text style as a typography token (+ `copyWith` for color) when active.
+
+    fontSize/fontWeight form a reusable `AppTextStyles` constant; the per-use
+    color is layered on with `copyWith` so one type ramp serves many colors. A
+    text with only a color (no size/weight) stays an inline `TextStyle`.
+    """
+    has_type = size is not None or weight is not None
+    if _active is not None and has_type:
+        base = _active.text_style(size, weight)
+        if color is not None:
+            return f"{base}.copyWith(color: {_color(color)})"
+        return base
+    style_args: list[str] = []
+    if size is not None:
+        style_args.append(f"fontSize: {_num(size)}")
+    if weight is not None:
+        style_args.append(f"fontWeight: FontWeight.w{int(weight)}")
+    if color is not None:
+        style_args.append(f"color: {_color(color)}")
+    if not style_args:
+        return None
+    return _call("TextStyle", style_args)
 
 
 def _emit_rectangle(node: dict) -> str:
@@ -307,6 +345,48 @@ def _emit_button(node: dict) -> str:
     return _call("ElevatedButton", args)
 
 
+def _render_theme(t: Tokens) -> str:
+    """Render the interned tokens into constant classes (empty -> "").
+
+    Entries are sorted by name so the theme block is stable regardless of the
+    order values were first encountered during emission.
+    """
+    sections: list[str] = []
+    if t.colors:
+        lines = [
+            f"  static const Color {n} = {_color_literal(hx)};"
+            for n, hx in sorted(t.colors.items())
+        ]
+        sections.append(_const_class("AppColors", lines))
+    if t.spacings:
+        lines = [
+            f"  static const double {n} = {_num(v)};"
+            for n, v in sorted(t.spacings.items())
+        ]
+        sections.append(_const_class("AppSpacing", lines))
+    if t.text_styles:
+        lines = [
+            f"  static const TextStyle {n} = {_text_style_literal(sz, w)};"
+            for n, (sz, w) in sorted(t.text_styles.items())
+        ]
+        sections.append(_const_class("AppTextStyles", lines))
+    return "\n\n".join(sections)
+
+
+def _const_class(name: str, lines: list[str]) -> str:
+    body = "\n".join(lines)
+    return f"abstract final class {name} {{\n{body}\n}}"
+
+
+def _text_style_literal(size: Any, weight: Any) -> str:
+    parts: list[str] = []
+    if size is not None:
+        parts.append(f"fontSize: {_num(size)}")
+    if weight is not None:
+        parts.append(f"fontWeight: FontWeight.w{int(weight)}")
+    return "TextStyle(" + ", ".join(parts) + ")"
+
+
 def _wrap_padding(inner: str, pad: dict) -> str:
     return _call("Padding", [f"padding: {_edge_insets(pad)}", f"child: {inner}"])
 
@@ -314,18 +394,35 @@ def _wrap_padding(inner: str, pad: dict) -> str:
 def _edge_insets(pad: dict) -> str:
     t, r, b, l = pad["top"], pad["right"], pad["bottom"], pad["left"]
     if t == r == b == l:
-        return f"EdgeInsets.all({_num(t)})"
+        return f"EdgeInsets.all({_space(t)})"
     if t == b and l == r:
-        return f"EdgeInsets.symmetric(horizontal: {_num(l)}, vertical: {_num(t)})"
-    return f"EdgeInsets.fromLTRB({_num(l)}, {_num(t)}, {_num(r)}, {_num(b)})"
+        return f"EdgeInsets.symmetric(horizontal: {_space(l)}, vertical: {_space(t)})"
+    return f"EdgeInsets.fromLTRB({_space(l)}, {_space(t)}, {_space(r)}, {_space(b)})"
 
 
 def _color(hex_str: str) -> str:
+    if _active is not None:
+        return _active.color(hex_str)
+    return _color_literal(hex_str)
+
+
+def _color_literal(hex_str: str) -> str:
     h = hex_str.lstrip("#").upper()
     if len(h) == 6:
         return f"Color(0xFF{h})"
     rrggbb, aa = h[:6], h[6:]
     return f"Color(0x{aa}{rrggbb})"
+
+
+def _space(n: Any) -> str:
+    """Emit a layout spacing/padding value, interned as a token when active.
+
+    Only gaps (auto-layout spacing and padding edges) route through here —
+    widths, positions, radii and font sizes stay literal via `_num`.
+    """
+    if _active is not None:
+        return _active.spacing(n)
+    return _num(n)
 
 
 def _class_name(name: str | None) -> str:

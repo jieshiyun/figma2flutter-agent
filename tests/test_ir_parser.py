@@ -426,3 +426,37 @@ def test_full_sample_file_round_trip() -> None:
     assert card["cornerRadius"] == 12
     assert [c["type"] for c in card["children"]] == ["text", "rectangle"]
     assert card["children"][1]["fill"] == "#E5E5EA"
+
+
+def test_parse_collects_semantic_color_styles_into_tokens() -> None:
+    styles = {
+        "144:616": {"name": "Green/Primary", "styleType": "FILL"},
+        "144:618": {"name": "Black", "styleType": "FILL"},
+    }
+    root = {
+        "id": "1",
+        "type": "FRAME",
+        "layoutMode": "VERTICAL",
+        "fills": [{"type": "SOLID", "color": {"r": 0.36, "g": 0.69, "b": 0.46}}],
+        "styles": {"fill": "144:616"},
+        "children": [
+            {
+                "id": "t",
+                "type": "TEXT",
+                "characters": "Hi",
+                "fills": [{"type": "SOLID", "color": {"r": 0, "g": 0, "b": 0}}],
+                "styles": {"text": "999", "fill": "144:618"},
+            }
+        ],
+    }
+    ir = ir_parser.parse(root, styles=styles)
+    colors = ir["tokens"]["colors"]
+    assert colors["#000000"] == "Black"
+    # the green's exact hex depends on rgb rounding; assert by name + key shape
+    assert "Green/Primary" in colors.values()
+    assert all(k.startswith("#") for k in colors)
+
+
+def test_parse_without_styles_has_no_tokens() -> None:
+    root = {"id": "1", "type": "FRAME", "layoutMode": "VERTICAL", "children": []}
+    assert "tokens" not in ir_parser.parse(root)

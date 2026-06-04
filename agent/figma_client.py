@@ -87,6 +87,22 @@ def fetch_node(
     return entry["document"], raw
 
 
+def extract_styles(raw: dict, node_id: str | None = None) -> dict:
+    """Return the top-level Style map (styleId -> meta) from a /nodes response.
+
+    The map (a sibling of "document" in each node entry) names published
+    fill/text Styles, e.g. {"144:616": {"name": "Green/Primary", "styleType":
+    "FILL"}}. Returns {} when absent. Used by ir_parser for semantic naming.
+    """
+    nodes = raw.get("nodes") or {}
+    entry = nodes.get(node_id) if node_id else None
+    if not isinstance(entry, dict):
+        entry = next((e for e in nodes.values() if isinstance(e, dict)), None)
+    if not isinstance(entry, dict):
+        return {}
+    return entry.get("styles") or {}
+
+
 def fetch_image_fills(file_key: str, token: str | None = None) -> dict[str, str]:
     """Return a map of imageRef -> download URL for the file's image fills.
 
