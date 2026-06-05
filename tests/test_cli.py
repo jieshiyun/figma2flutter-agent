@@ -715,3 +715,83 @@ def test_validate_flutter_not_installed_returns_1(
     rc = cli.main(["--input", str(SAMPLE), "--output", str(out), "--validate"])
     assert rc == 1
     assert "flutter CLI not found on PATH" in capsys.readouterr().err
+
+
+def test_visual_validate_writes_report(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    import numpy as np
+    from PIL import Image
+
+    arr = np.random.default_rng(0).integers(0, 256, (40, 40, 3)).astype("uint8")
+    ref = tmp_path / "ref.png"
+    shot = tmp_path / "shot.png"
+    Image.fromarray(arr).save(ref)
+    Image.fromarray(arr).save(shot)
+    monkeypatch.setattr(cli.screenshot, "capture", lambda *a, **k: shot)
+
+    out = tmp_path / "lib" / "generated.dart"
+    rc = cli.main(
+        [
+            "--input", str(SAMPLE),
+            "--output", str(out),
+            "--reference-image", str(ref),
+            "--visual-validate",
+        ]
+    )
+    assert rc == 0
+    report = out.parent / "visual_report.json"
+    assert report.exists()
+    data = json.loads(report.read_text())
+    assert data["visual_score"] == 100.0
+    out_text = capsys.readouterr().out
+    assert "Visual score: 100.0/100" in out_text
+    assert f"Reference image: {ref}" in out_text
+    assert f"Flutter screenshot: {shot}" in out_text
+
+
+def test_visual_validate_save_run_copies_artifacts(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    import numpy as np
+    from PIL import Image
+
+    arr = np.random.default_rng(1).integers(0, 256, (24, 24, 3)).astype("uint8")
+    ref = tmp_path / "ref.png"
+    shot = tmp_path / "shot.png"
+    Image.fromarray(arr).save(ref)
+    Image.fromarray(arr).save(shot)
+    monkeypatch.setattr(cli.screenshot, "capture", lambda *a, **k: shot)
+
+    out = tmp_path / "lib" / "generated.dart"
+    runs = tmp_path / "runs"
+    rc = cli.main(
+        [
+            "--input", str(SAMPLE),
+            "--output", str(out),
+            "--reference-image", str(ref),
+            "--visual-validate",
+            "--save-run", "--runs-dir", str(runs),
+        ]
+    )
+    assert rc == 0
+    run_dir = next(runs.iterdir())
+    assert (run_dir / "visual_report.json").exists()
+    assert (run_dir / "visual_reference.png").exists()
+    assert (run_dir / "visual_screenshot.png").exists()
+    summary = json.loads((run_dir / "summary.json").read_text())
+    assert summary["files"]["visual_report"] == "visual_report.json"
+    assert summary["files"]["visual_screenshot"] == "visual_screenshot.png"
+
+
+def test_visual_validate_skips_without_reference(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    out = tmp_path / "out.dart"
+    rc = cli.main(
+        ["--input", str(SAMPLE), "--output", str(out), "--visual-validate"]
+    )
+    assert rc == 0
+    assert "needs --reference-image or --figma-url" in capsys.readouterr().err

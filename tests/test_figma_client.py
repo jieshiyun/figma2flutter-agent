@@ -90,3 +90,50 @@ def test_extract_styles_falls_back_to_first_entry() -> None:
 def test_extract_styles_missing_returns_empty() -> None:
     assert figma_client.extract_styles({"nodes": {}}) == {}
     assert figma_client.extract_styles({}) == {}
+
+
+class _FakeResp:
+    def __init__(self, payload: dict) -> None:
+        import json as _json
+
+        self._data = _json.dumps(payload).encode("utf-8")
+
+    def __enter__(self) -> "_FakeResp":
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return self._data
+
+
+def _patch_urlopen(monkeypatch: pytest.MonkeyPatch, payload: dict) -> None:
+    import urllib.request
+
+    monkeypatch.setattr(
+        urllib.request, "urlopen", lambda *a, **k: _FakeResp(payload)
+    )
+
+
+def test_fetch_node_image_url_returns_render_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_urlopen(monkeypatch, {"images": {"1:2": "https://s3/render.png"}, "err": None})
+    url = figma_client.fetch_node_image_url("key", "1:2", "tok")
+    assert url == "https://s3/render.png"
+
+
+def test_fetch_node_image_url_raises_on_err(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_urlopen(monkeypatch, {"images": {}, "err": "boom"})
+    with pytest.raises(FigmaError, match="render failed"):
+        figma_client.fetch_node_image_url("key", "1:2", "tok")
+
+
+def test_fetch_node_image_url_none_when_no_image(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_urlopen(monkeypatch, {"images": {"1:2": None}, "err": None})
+    assert figma_client.fetch_node_image_url("key", "1:2", "tok") is None

@@ -124,6 +124,40 @@ def fetch_image_fills(file_key: str, token: str | None = None) -> dict[str, str]
     return {ref: url for ref, url in images.items() if url}
 
 
+def fetch_node_image_url(
+    file_key: str,
+    node_id: str,
+    token: str | None = None,
+    scale: float = 2.0,
+    fmt: str = "png",
+) -> str | None:
+    """Return a render URL for a node via GET /v1/images/<key>.
+
+    This is the node *render* endpoint (the whole node rasterized as it
+    looks in Figma), distinct from fetch_image_fills (raw fill bitmaps).
+    The response is {"images": {"<id>": "<url>"}, "err": null}. Returns
+    None when Figma produced no image for the node.
+    """
+    auth = resolve_token(token)
+    ids = urllib.parse.quote(node_id, safe="")
+    url = (
+        f"{FIGMA_API}/images/{file_key}"
+        f"?ids={ids}&format={fmt}&scale={scale}"
+    )
+    req = urllib.request.Request(url, headers={"X-Figma-Token": auth})
+    try:
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        raise FigmaError(f"Figma API returned HTTP {exc.code}: {exc.reason}") from exc
+    except urllib.error.URLError as exc:
+        raise FigmaError(f"Figma API request failed: {exc.reason}") from exc
+    if data.get("err"):
+        raise FigmaError(f"Figma image render failed: {data['err']}")
+    images = data.get("images") or {}
+    return images.get(node_id) or next((u for u in images.values() if u), None)
+
+
 def download_file(url: str, dest: str) -> None:
     """Download a URL to a local path (used for image-fill S3 links)."""
     try:

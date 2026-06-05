@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -85,6 +86,18 @@ class RunLogger:
 
     def save_validation_after(self, log: str) -> Path:
         return self._save_text("validation_after", "validation_after.log", log)
+
+    def save_visual_report(self, report: dict) -> Path:
+        path = self.dir / "visual_report.json"
+        path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
+        self._files["visual_report"] = "visual_report.json"
+        return path
+
+    def save_visual_image(self, key: str, filename: str, src: str | Path) -> Path:
+        dest = self.dir / filename
+        shutil.copyfile(src, dest)
+        self._files[key] = filename
+        return dest
 
     def write_summary(self, *, success: bool, **meta: Any) -> Path:
         summary: dict[str, Any] = {

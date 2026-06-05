@@ -1,0 +1,17 @@
+{
+  "reference_size": [
+    390,
+    844
+  ],
+  "candidate_size": [
+    390,
+    844
+  ],
+  "size_ratio": [
+    1.0,
+    1.0
+  ],
+  "pixel_mae": 0.0,
+  "ssim": 1.0,
+  "visual_score": 100.0
+}

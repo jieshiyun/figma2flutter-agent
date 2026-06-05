@@ -5,7 +5,17 @@ import json
 import sys
 from pathlib import Path
 
-from agent import codegen, figma_client, images, ir_parser, planner, repair, validator
+from agent import (
+    codegen,
+    figma_client,
+    images,
+    ir_parser,
+    planner,
+    repair,
+    screenshot,
+    validator,
+    visual,
+)
 from agent.figma_client import FigmaError
 from agent.repair import LLMClient, StubLLMClient
 from agent.run_logger import RunLogger
@@ -78,6 +88,97 @@ def _maybe_download_images(
         warnings.append(f"{len(missing)} image fill(s) had no downloadable URL")
 
 
+_DEFAULT_SCREEN_SIZE = (375, 812)
+
+
+def _screen_geometry(plan: dict) -> tuple[str, int, int]:
+    """Return (screen_class, width, height) for the plan's root component."""
+    root_name = plan.get("rootComponent")
+    screen_class = codegen._class_name(root_name)
+    comp = next(
+        (c for c in plan.get("components", []) if c.get("name") == root_name),
+        None,
+    )
+    size = ((comp or {}).get("root") or {}).get("size") or {}
+    w = int(round(size.get("width") or _DEFAULT_SCREEN_SIZE[0]))
+    h = int(round(size.get("height") or _DEFAULT_SCREEN_SIZE[1]))
+    return screen_class, w, h
+
+
+def _resolve_reference(
+    args: argparse.Namespace, node_id: str | None, dest: Path
+) -> Path | None:
+    """Return the reference PNG path, exporting from Figma when needed.
+
+    Prefers an explicit --reference-image. Otherwise renders the node via
+    the Figma image API (requires --figma-url). Returns None if neither is
+    available.
+    """
+    if args.reference_image:
+        return Path(args.reference_image)
+    if not args.figma_url:
+        return None
+    file_key, _ = figma_client.parse_figma_url(args.figma_url)
+    url = figma_client.fetch_node_image_url(
+        file_key, node_id or "", args.figma_token, scale=args.figma_scale
+    )
+    if not url:
+        raise FigmaError("Figma returned no render URL for the node")
+    figma_client.download_file(url, str(dest))
+    return dest
+
+
+def _run_visual_validate(
+    args: argparse.Namespace,
+    plan: dict,
+    out_path: Path,
+    node_id: str | None,
+    logger: RunLogger | None = None,
+) -> None:
+    """Capture a Flutter screenshot, diff it against the Figma reference,
+    print the visual score, and write visual_report.json. When a RunLogger
+    is given, the report and both images are also copied into the run dir.
+    Non-fatal: any failure is reported as a warning and generation still
+    succeeds.
+    """
+    out_dir = out_path.parent
+    try:
+        reference = _resolve_reference(
+            args, node_id, out_dir / "visual_reference.png"
+        )
+        if reference is None:
+            print(
+                "warning: --visual-validate needs --reference-image or --figma-url; skipped",
+                file=sys.stderr,
+            )
+            return
+        if not reference.exists():
+            print(f"warning: reference image not found: {reference}", file=sys.stderr)
+            return
+        screen_class, w, h = _screen_geometry(plan)
+        shot = screenshot.capture(args.flutter_root, screen_class, w, h, out_path.name)
+        report = visual.compare(reference, shot)
+    except (FigmaError, RuntimeError, OSError) as exc:
+        print(f"warning: visual validation failed: {exc}", file=sys.stderr)
+        return
+    report_path = out_dir / "visual_report.json"
+    report_path.write_text(json.dumps(report.to_dict(), indent=2))
+    print(f"Visual score: {report.visual_score:.1f}/100")
+    print(f"  SSIM {report.ssim:.3f} | pixel MAE {report.pixel_mae:.3f}")
+    print(
+        f"  reference {report.reference_size[0]}x{report.reference_size[1]} "
+        f"vs flutter {report.candidate_size[0]}x{report.candidate_size[1]}"
+    )
+    print(f"Reference image: {reference}")
+    print(f"Flutter screenshot: {shot}")
+    print(f"Visual report: {report_path}")
+
+    if logger is not None:
+        logger.save_visual_report(report.to_dict())
+        logger.save_visual_image("visual_reference", "visual_reference.png", reference)
+        logger.save_visual_image("visual_screenshot", "visual_screenshot.png", shot)
+
+
 def _run_validate(flutter_root: str) -> ValidationResult | None:
     try:
         return validator.validate(flutter_root)
@@ -127,6 +228,21 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         default=1,
         help="Maximum repair attempts before giving up (default: 1).",
+    )
+    parser.add_argument(
+        "--visual-validate",
+        action="store_true",
+        help="Screenshot the generated screen (golden test) and diff it against the Figma render; prints a visual score.",
+    )
+    parser.add_argument(
+        "--reference-image",
+        help="Reference PNG for --visual-validate (defaults to a Figma node render when --figma-url is given).",
+    )
+    parser.add_argument(
+        "--figma-scale",
+        type=float,
+        default=2.0,
+        help="Scale factor for the Figma node render used by --visual-validate (default: 2.0).",
     )
     parser.add_argument(
         "--save-run",
@@ -202,6 +318,12 @@ def main(argv: list[str] | None = None) -> int:
         logger.save_ir(ir)
         logger.save_plan(plan)
         logger.save_generated_before(dart)
+
+    if args.visual_validate:
+        node_id = None
+        if args.figma_url:
+            _, node_id = figma_client.parse_figma_url(args.figma_url)
+        _run_visual_validate(args, plan, out_path, node_id, logger)
 
     success = False
     repair_attempts = 0
