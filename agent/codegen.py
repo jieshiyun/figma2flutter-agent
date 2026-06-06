@@ -190,7 +190,13 @@ def _emit_text(node: dict) -> str:
         args.append("style: " + style)
     if "textAlign" in node:
         args.append(f"textAlign: TextAlign.{node['textAlign']}")
-    return _call("Text", args)
+    text = _call("Text", args)
+    # Fixed-width text wraps to its Figma box width; without this constraint a
+    # Text inside a Stack/Positioned is unbounded and clips to one line.
+    size = node.get("size") or {}
+    if node.get("wrap") and size.get("width") is not None:
+        return _call("SizedBox", [f"width: {_num(size['width'])}", f"child: {text}"])
+    return text
 
 
 def _text_style_expr(size: Any, weight: Any, color: str | None) -> str | None:

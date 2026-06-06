@@ -158,6 +158,41 @@ def test_stack_child_without_position_is_not_wrapped() -> None:
     assert "Positioned(" not in dart
 
 
+def test_wrap_text_constrains_width_with_sized_box() -> None:
+    ir = _screen(
+        [
+            {
+                "id": "t",
+                "type": "text",
+                "text": "Long body that should wrap",
+                "size": {"width": 269, "height": 40},
+                "wrap": True,
+            }
+        ]
+    )
+    dart = _gen(ir)
+    assert "SizedBox(" in dart
+    assert "width: 269" in dart
+    assert "child: Text(" in dart
+
+
+def test_text_without_wrap_flag_stays_bare() -> None:
+    ir = _screen(
+        [
+            {
+                "id": "t",
+                "type": "text",
+                "text": "Single line title",
+                "size": {"width": 272, "height": 30},
+            }
+        ]
+    )
+    dart = _gen(ir)
+    assert "Text(" in dart
+    # No width constraint when the text hugs its content (no wrap flag).
+    assert "SizedBox(" not in dart
+
+
 def test_ellipse_with_image_renders_decoration_image() -> None:
     ir = _screen(
         [

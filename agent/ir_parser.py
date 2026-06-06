@@ -193,6 +193,11 @@ def _parse_text(node: dict) -> dict:
     _set_optional(out, "fontWeight", style.get("fontWeight"))
     _set_optional(out, "color", _solid_fill(node))
     _set_optional(out, "textAlign", _TEXT_ALIGN.get(style.get("textAlignHorizontal")))
+    # Fixed-width Figma text (textAutoResize != WIDTH_AND_HEIGHT) is meant to
+    # wrap inside its box. Flag it so codegen constrains the width; auto-width
+    # ("WIDTH_AND_HEIGHT") text keeps hugging its content on a single line.
+    if (style.get("textAutoResize") or "").upper() in ("HEIGHT", "NONE", "TRUNCATE"):
+        out["wrap"] = True
     return out
 
 
