@@ -1,98 +1,1124 @@
 {
   "version": "0.1",
-  "rootComponent": "ProfileScreen",
+  "rootComponent": "ProfilePosts",
   "components": [
     {
-      "name": "ProfileScreen",
+      "name": "ProfilePosts",
       "root": {
-        "id": "1:1",
+        "id": "151:546",
         "type": "screen",
-        "name": "ProfileScreen",
+        "name": "Profile/Posts",
         "size": {
-          "width": 390,
-          "height": 844
+          "width": 375.0,
+          "height": 812.0
         },
         "background": "#FFFFFF",
         "layout": {
-          "direction": "vertical",
-          "spacing": 16,
-          "alignment": "stretch",
-          "justify": "start",
-          "padding": {
-            "top": 24,
-            "right": 16,
-            "bottom": 24,
-            "left": 16
-          }
+          "direction": "stack"
         },
         "children": [
           {
-            "id": "1:2",
-            "type": "text",
-            "text": "Welcome back",
-            "fontSize": 24,
-            "fontWeight": 700,
-            "color": "#111111",
-            "textAlign": "left"
+            "id": "151:641",
+            "type": "rectangle",
+            "name": "Rectangle 239",
+            "size": {
+              "width": 376.0,
+              "height": 245.0
+            },
+            "fill": "#5DB075",
+            "position": {
+              "x": -1.0,
+              "y": 0.0
+            }
           },
           {
-            "id": "1:3",
-            "type": "image",
-            "src": "assets/avatar.png",
+            "id": "151:686",
+            "type": "ellipse",
+            "name": "Ellipse 6",
             "size": {
-              "width": 80,
-              "height": 80
+              "width": 158.0,
+              "height": 158.0
             },
-            "fit": "cover",
-            "cornerRadius": 40
+            "border": {
+              "color": "#FFFFFF",
+              "width": 4.0
+            },
+            "imageRef": "80ba23780f992d6275fd95498e163d7b4c6dd13a",
+            "imageFit": "cover",
+            "position": {
+              "x": 108.0,
+              "y": 128.0
+            }
           },
           {
             "type": "component",
-            "ref": "InfoCard"
+            "ref": "IOSStatusBarWhite",
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "PageHeader",
+            "position": {
+              "x": 16.0,
+              "y": 60.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "NameBio",
+            "position": {
+              "x": 52.0,
+              "y": 302.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "SegmentedControlLeft",
+            "position": {
+              "x": 16.0,
+              "y": 389.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "ContentContentBlockSmall",
+            "position": {
+              "x": 16.0,
+              "y": 455.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "ContentContentBlockSmall",
+            "position": {
+              "x": 16.0,
+              "y": 548.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "ContentContentBlockSmall",
+            "position": {
+              "x": 16.0,
+              "y": 641.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "ContentContentBlockSmall",
+            "position": {
+              "x": 16.0,
+              "y": 734.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "IOSBottomBar5Tabs",
+            "position": {
+              "x": 0.0,
+              "y": 729.0
+            }
           }
         ]
       }
     },
     {
-      "name": "InfoCard",
+      "name": "BG",
       "root": {
-        "id": "1:4",
+        "id": "I151:547;144:356;144:381",
         "type": "frame",
-        "name": "InfoCard",
-        "background": "#F5F5F7",
-        "cornerRadius": 12,
+        "name": "BG",
+        "size": {
+          "width": 375.0,
+          "height": 46.0
+        },
         "layout": {
-          "direction": "vertical",
-          "spacing": 8,
-          "alignment": "start",
-          "justify": "start",
-          "padding": {
-            "top": 16,
-            "right": 16,
-            "bottom": 16,
-            "left": 16
-          }
+          "direction": "stack"
         },
         "children": [
           {
-            "id": "1:5",
-            "type": "text",
-            "text": "Account",
-            "fontSize": 16,
-            "fontWeight": 600,
-            "color": "#111111"
+            "id": "I151:547;144:356;144:382",
+            "type": "rectangle",
+            "name": "BG",
+            "size": {
+              "width": 375.0,
+              "height": 44.0
+            },
+            "fill": "#000000",
+            "position": {
+              "x": 0.0,
+              "y": 2.0
+            }
           },
           {
-            "id": "1:6",
-            "type": "rectangle",
+            "id": "I151:547;144:356;144:385",
+            "type": "icon",
+            "name": "Notch",
             "size": {
-              "width": 100,
-              "height": 1
+              "width": 219.0,
+              "height": 30.0
             },
-            "fill": "#E5E5EA"
+            "position": {
+              "x": 78.0,
+              "y": 0.0
+            }
           }
-        ]
+        ],
+        "position": {
+          "x": 0.0,
+          "y": -2.0
+        }
+      }
+    },
+    {
+      "name": "Battery",
+      "root": {
+        "id": "I151:547;144:356;144:387",
+        "type": "frame",
+        "name": "Battery",
+        "size": {
+          "width": 24.32803726196289,
+          "height": 11.333333015441895
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:547;144:356;144:388",
+            "type": "icon",
+            "name": "Rectangle",
+            "size": {
+              "width": 22.0,
+              "height": 11.333333015441895
+            },
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:547;144:356;144:389",
+            "type": "icon",
+            "name": "Combined Shape",
+            "size": {
+              "width": 1.328037977218628,
+              "height": 4.0
+            },
+            "position": {
+              "x": 23.0,
+              "y": 3.6666717529296875
+            }
+          },
+          {
+            "id": "I151:547;144:356;144:390",
+            "type": "rectangle",
+            "name": "Rectangle",
+            "size": {
+              "width": 18.0,
+              "height": 7.333333492279053
+            },
+            "fill": "#FFFFFF",
+            "cornerRadius": 1.3333333730697632,
+            "position": {
+              "x": 2.0,
+              "y": 2.0
+            }
+          }
+        ],
+        "position": {
+          "x": 42.333251953125,
+          "y": 0.002685546875
+        }
+      }
+    },
+    {
+      "name": "RightSide",
+      "root": {
+        "id": "I151:547;144:356;144:386",
+        "type": "frame",
+        "name": "Right Side",
+        "size": {
+          "width": 66.661376953125,
+          "height": 11.336018562316895
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "type": "component",
+            "ref": "Battery",
+            "position": {
+              "x": 42.333251953125,
+              "y": 0.002685546875
+            }
+          }
+        ],
+        "position": {
+          "x": 293.666748046875,
+          "y": 17.3306884765625
+        }
+      }
+    },
+    {
+      "name": "LeftSide",
+      "root": {
+        "id": "I151:547;144:356;144:400",
+        "type": "frame",
+        "name": "Left Side",
+        "size": {
+          "width": 28.42616844177246,
+          "height": 11.0888671875
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:547;144:356;144:401",
+            "type": "icon",
+            "name": "9:41",
+            "size": {
+              "width": 28.42616844177246,
+              "height": 11.0888671875
+            },
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "position": {
+          "x": 33.45361328125,
+          "y": 17.16748046875
+        }
+      }
+    },
+    {
+      "name": "IOSStatusBarBlack",
+      "root": {
+        "id": "I151:547;144:356",
+        "type": "frame",
+        "name": "iOS/Status Bar/Black",
+        "size": {
+          "width": 375.0,
+          "height": 44.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "type": "component",
+            "ref": "BG",
+            "position": {
+              "x": 0.0,
+              "y": -2.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "RightSide",
+            "position": {
+              "x": 293.666748046875,
+              "y": 17.3306884765625
+            }
+          },
+          {
+            "type": "component",
+            "ref": "LeftSide",
+            "position": {
+              "x": 33.45361328125,
+              "y": 17.16748046875
+            }
+          }
+        ],
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        }
+      }
+    },
+    {
+      "name": "IOSStatusBarWhite",
+      "root": {
+        "id": "151:547",
+        "type": "frame",
+        "name": "iOS/Status Bar/White",
+        "size": {
+          "width": 375.0,
+          "height": 44.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "type": "component",
+            "ref": "IOSStatusBarBlack",
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        }
+      }
+    },
+    {
+      "name": "IconX",
+      "root": {
+        "id": "I151:548;151:511",
+        "type": "frame",
+        "name": "Icon/X",
+        "size": {
+          "width": 22.627416610717773,
+          "height": 22.627416610717773
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [],
+        "position": {
+          "x": -0.313720703125,
+          "y": 4.686291694641113
+        }
+      }
+    },
+    {
+      "name": "PageHeader",
+      "root": {
+        "id": "151:548",
+        "type": "frame",
+        "name": "Page Header",
+        "size": {
+          "width": 343.0,
+          "height": 36.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:548;144:2324",
+            "type": "text",
+            "text": "Logout",
+            "name": "Logout",
+            "size": {
+              "width": 54.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 500,
+            "color": "#FFFFFF",
+            "textAlign": "right",
+            "position": {
+              "x": 289.0,
+              "y": 8.0
+            }
+          },
+          {
+            "id": "I151:548;144:2323",
+            "type": "text",
+            "text": "Profile",
+            "name": "Profile",
+            "size": {
+              "width": 94.0,
+              "height": 36.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 30.0,
+            "fontWeight": 600,
+            "color": "#FFFFFF",
+            "textAlign": "center",
+            "position": {
+              "x": 126.0,
+              "y": 0.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "IconX",
+            "position": {
+              "x": -0.313720703125,
+              "y": 4.686291694641113
+            }
+          },
+          {
+            "id": "I151:548;144:2329",
+            "type": "text",
+            "text": "Settings",
+            "name": "Settings",
+            "size": {
+              "width": 64.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 500,
+            "color": "#FFFFFF",
+            "textAlign": "left",
+            "position": {
+              "x": 0.0,
+              "y": 8.0
+            }
+          }
+        ],
+        "position": {
+          "x": 16.0,
+          "y": 60.0
+        }
+      }
+    },
+    {
+      "name": "NameBio",
+      "root": {
+        "id": "151:689",
+        "type": "frame",
+        "name": "Name + Bio",
+        "size": {
+          "width": 272.0,
+          "height": 63.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "151:687",
+            "type": "text",
+            "text": "Victoria Robertson",
+            "name": "Victoria Robertson",
+            "size": {
+              "width": 272.0,
+              "height": 36.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 30.0,
+            "fontWeight": 600,
+            "color": "#000000",
+            "textAlign": "center",
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "151:688",
+            "type": "text",
+            "text": "A mantra goes here",
+            "name": "A mantra goes here",
+            "size": {
+              "width": 151.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 600,
+            "color": "#000000",
+            "textAlign": "center",
+            "position": {
+              "x": 61.0,
+              "y": 44.0
+            }
+          }
+        ],
+        "position": {
+          "x": 52.0,
+          "y": 302.0
+        }
+      }
+    },
+    {
+      "name": "LeftSelected",
+      "root": {
+        "id": "I151:886;151:711;151:701",
+        "type": "frame",
+        "name": "Left Selected",
+        "size": {
+          "width": 171.5,
+          "height": 46.0
+        },
+        "cornerRadius": 100.0,
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:886;151:711;151:699",
+            "type": "rectangle",
+            "name": "BG",
+            "size": {
+              "width": 171.5,
+              "height": 46.0
+            },
+            "fill": "#FFFFFF",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:886;151:711;151:697",
+            "type": "text",
+            "text": "Posts",
+            "name": "Posts",
+            "size": {
+              "width": 44.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 600,
+            "color": "#5DB075",
+            "textAlign": "center",
+            "position": {
+              "x": 64.0,
+              "y": 14.0
+            }
+          }
+        ],
+        "position": {
+          "x": 2.0,
+          "y": 2.0
+        }
+      }
+    },
+    {
+      "name": "RightSelected",
+      "root": {
+        "id": "I151:886;151:711;151:727",
+        "type": "frame",
+        "name": "Right Selected",
+        "size": {
+          "width": 171.5,
+          "height": 46.0
+        },
+        "cornerRadius": 100.0,
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:886;151:711;151:728",
+            "type": "rectangle",
+            "name": "BG",
+            "size": {
+              "width": 171.5,
+              "height": 46.0
+            },
+            "fill": "#FFFFFF",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:886;151:711;151:729",
+            "type": "text",
+            "text": "Search",
+            "name": "Search",
+            "size": {
+              "width": 55.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 600,
+            "color": "#5DB075",
+            "textAlign": "center",
+            "position": {
+              "x": 59.0,
+              "y": 14.0
+            }
+          }
+        ],
+        "position": {
+          "x": 169.0,
+          "y": 2.0
+        }
+      }
+    },
+    {
+      "name": "SegmentedControlStructure",
+      "root": {
+        "id": "I151:886;151:711",
+        "type": "frame",
+        "name": "Segmented Control/Structure",
+        "size": {
+          "width": 343.0,
+          "height": 50.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:886;151:711;151:696",
+            "type": "rectangle",
+            "name": "BG",
+            "size": {
+              "width": 343.0,
+              "height": 50.0
+            },
+            "fill": "#F6F6F6",
+            "cornerRadius": 100.0,
+            "border": {
+              "color": "#E8E8E8",
+              "width": 1.0
+            },
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:886;151:711;151:700",
+            "type": "text",
+            "text": "Photos",
+            "name": "Photos",
+            "size": {
+              "width": 54.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 500,
+            "color": "#BDBDBD",
+            "textAlign": "center",
+            "position": {
+              "x": 228.0,
+              "y": 16.0
+            }
+          },
+          {
+            "id": "I151:886;151:711;151:768",
+            "type": "text",
+            "text": "Search",
+            "name": "Search",
+            "size": {
+              "width": 54.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 500,
+            "color": "#BDBDBD",
+            "textAlign": "center",
+            "position": {
+              "x": 61.0,
+              "y": 16.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "LeftSelected",
+            "position": {
+              "x": 2.0,
+              "y": 2.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "RightSelected",
+            "position": {
+              "x": 169.0,
+              "y": 2.0
+            }
+          }
+        ],
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        }
+      }
+    },
+    {
+      "name": "SegmentedControlLeft",
+      "root": {
+        "id": "151:886",
+        "type": "frame",
+        "name": "Segmented Control/Left",
+        "size": {
+          "width": 343.0,
+          "height": 50.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "type": "component",
+            "ref": "SegmentedControlStructure",
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "position": {
+          "x": 16.0,
+          "y": 389.0
+        }
+      }
+    },
+    {
+      "name": "ContentContentBlockSmall",
+      "root": {
+        "id": "151:897",
+        "type": "frame",
+        "name": "Content/Content Block/Small",
+        "size": {
+          "width": 343.0,
+          "height": 77.0000228881836
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:897;147:490",
+            "type": "rectangle",
+            "name": "Content Block",
+            "size": {
+              "width": 50.0,
+              "height": 50.0
+            },
+            "fill": "#F6F6F6",
+            "cornerRadius": 8.0,
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:897;147:491",
+            "type": "text",
+            "text": "Header",
+            "name": "Header",
+            "size": {
+              "width": 57.0,
+              "height": 19.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 16.0,
+            "fontWeight": 600,
+            "color": "#000000",
+            "textAlign": "left",
+            "position": {
+              "x": 66.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:897;147:493",
+            "type": "text",
+            "text": "8m ago",
+            "name": "8m ago",
+            "size": {
+              "width": 50.0,
+              "height": 17.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 14.0,
+            "fontWeight": 400,
+            "color": "#BDBDBD",
+            "textAlign": "right",
+            "position": {
+              "x": 293.0,
+              "y": 2.0
+            }
+          },
+          {
+            "id": "I151:897;147:492",
+            "type": "text",
+            "text": "He'll want to use your yacht, and I don't want this thing smelling like fish.",
+            "name": "He'll want to use your yacht, and I don't want this thing smelling like fish.",
+            "size": {
+              "width": 269.0,
+              "height": 34.0
+            },
+            "fontFamily": "Inter",
+            "fontSize": 14.0,
+            "fontWeight": 400,
+            "color": "#000000",
+            "textAlign": "left",
+            "wrap": true,
+            "position": {
+              "x": 66.0,
+              "y": 27.0
+            }
+          },
+          {
+            "id": "I151:897;147:494",
+            "type": "rectangle",
+            "fill": "#E8E8E8",
+            "size": {
+              "width": 277.0,
+              "height": 1.0
+            },
+            "name": "Divider Line",
+            "position": {
+              "x": 66.0,
+              "y": 76.99997578388889
+            }
+          }
+        ],
+        "position": {
+          "x": 16.0,
+          "y": 455.0
+        }
+      }
+    },
+    {
+      "name": "HomeIndicator",
+      "root": {
+        "id": "I151:567;150:582",
+        "type": "frame",
+        "name": "Home Indicator",
+        "size": {
+          "width": 134.0,
+          "height": 5.0
+        },
+        "cornerRadius": 100.0,
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:567;150:583",
+            "type": "rectangle",
+            "name": "Home Indicator",
+            "size": {
+              "width": 134.0,
+              "height": 5.0
+            },
+            "fill": "#000000",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "position": {
+          "x": 120.0,
+          "y": 69.0
+        }
+      }
+    },
+    {
+      "name": "IPhoneUI",
+      "root": {
+        "id": "I151:567;150:580",
+        "type": "frame",
+        "name": "iPhone UI",
+        "size": {
+          "width": 375.0,
+          "height": 83.0
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:567;150:581",
+            "type": "rectangle",
+            "name": "Background",
+            "size": {
+              "width": 375.0,
+              "height": 83.0
+            },
+            "fill": "#FAFAFA",
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "type": "component",
+            "ref": "HomeIndicator",
+            "position": {
+              "x": 120.0,
+              "y": 69.0
+            }
+          }
+        ],
+        "position": {
+          "x": 0.0,
+          "y": 0.5
+        }
+      }
+    },
+    {
+      "name": "Tabs",
+      "root": {
+        "id": "I151:567;150:584",
+        "type": "frame",
+        "name": "Tabs",
+        "size": {
+          "width": 320.0,
+          "height": 32.0
+        },
+        "cornerRadius": 100.0,
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "id": "I151:567;150:618",
+            "type": "rectangle",
+            "name": "Rectangle 9",
+            "size": {
+              "width": 32.0,
+              "height": 32.0
+            },
+            "fill": "#5DB075",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:567;150:619",
+            "type": "rectangle",
+            "name": "Rectangle 10",
+            "size": {
+              "width": 32.0,
+              "height": 32.0
+            },
+            "fill": "#E8E8E8",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 72.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:567;150:620",
+            "type": "rectangle",
+            "name": "Rectangle 11",
+            "size": {
+              "width": 32.0,
+              "height": 32.0
+            },
+            "fill": "#E8E8E8",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 144.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:567;150:621",
+            "type": "rectangle",
+            "name": "Rectangle 12",
+            "size": {
+              "width": 32.0,
+              "height": 32.0
+            },
+            "fill": "#E8E8E8",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 216.0,
+              "y": 0.0
+            }
+          },
+          {
+            "id": "I151:567;150:622",
+            "type": "rectangle",
+            "name": "Rectangle 13",
+            "size": {
+              "width": 32.0,
+              "height": 32.0
+            },
+            "fill": "#E8E8E8",
+            "cornerRadius": 100.0,
+            "position": {
+              "x": 288.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "position": {
+          "x": 26.0,
+          "y": 15.0
+        }
+      }
+    },
+    {
+      "name": "IOSBottomBar5Tabs",
+      "root": {
+        "id": "151:567",
+        "type": "frame",
+        "name": "iOS/Bottom Bar/5 Tabs",
+        "size": {
+          "width": 375.0,
+          "height": 83.5
+        },
+        "layout": {
+          "direction": "stack"
+        },
+        "children": [
+          {
+            "type": "component",
+            "ref": "IPhoneUI",
+            "position": {
+              "x": 0.0,
+              "y": 0.5
+            }
+          },
+          {
+            "type": "component",
+            "ref": "Tabs",
+            "position": {
+              "x": 26.0,
+              "y": 15.0
+            }
+          },
+          {
+            "id": "I151:567;150:614",
+            "type": "rectangle",
+            "name": "Top Divider",
+            "size": {
+              "width": 375.0,
+              "height": 0.5
+            },
+            "fill": "#BDC5CD",
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "position": {
+          "x": 0.0,
+          "y": 729.0
+        }
       }
     }
-  ]
+  ],
+  "tokens": {
+    "colors": {
+      "#FFFFFF": "White",
+      "#5DB075": "Green/Primary",
+      "#24262B": "Carbon / Darkest",
+      "#D6D9DD": "Carbon Neutral/300",
+      "#BDBDBD": "Gray/03",
+      "#F6F6F6": "Gray/01",
+      "#E8E8E8": "Gray/02",
+      "#000000": "Black"
+    }
+  }
 }

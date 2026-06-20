@@ -211,7 +211,10 @@ def _emit_frame(node: dict) -> str:
 def _emit_text(node: dict) -> str:
     args: list[str] = [_dart_str(node["text"])]
     style = _text_style_expr(
-        node.get("fontSize"), node.get("fontWeight"), node.get("color")
+        node.get("fontSize"),
+        node.get("fontWeight"),
+        node.get("color"),
+        node.get("fontFamily"),
     )
     if style:
         args.append("style: " + style)
@@ -253,20 +256,25 @@ def _emit_icon(node: dict) -> str:
     return _call("SizedBox", args) if args else "const SizedBox.shrink()"
 
 
-def _text_style_expr(size: Any, weight: Any, color: str | None) -> str | None:
+def _text_style_expr(
+    size: Any, weight: Any, color: str | None, family: str | None = None
+) -> str | None:
     """Text style as a typography token (+ `copyWith` for color) when active.
 
-    fontSize/fontWeight form a reusable `AppTextStyles` constant; the per-use
-    color is layered on with `copyWith` so one type ramp serves many colors. A
-    text with only a color (no size/weight) stays an inline `TextStyle`.
+    fontFamily/fontSize/fontWeight form a reusable `AppTextStyles` constant; the
+    per-use color is layered on with `copyWith` so one type ramp serves many
+    colors. A text with only a color (no family/size/weight) stays an inline
+    `TextStyle`.
     """
-    has_type = size is not None or weight is not None
+    has_type = size is not None or weight is not None or family is not None
     if _active is not None and has_type:
-        base = _active.text_style(size, weight)
+        base = _active.text_style(size, weight, family)
         if color is not None:
             return f"{base}.copyWith(color: {_color(color)})"
         return base
     style_args: list[str] = []
+    if family is not None:
+        style_args.append(f"fontFamily: {_dart_str(family)}")
     if size is not None:
         style_args.append(f"fontSize: {_num(size)}")
     if weight is not None:
@@ -426,8 +434,8 @@ def _render_theme(t: Tokens) -> str:
         sections.append(_const_class("AppSpacing", lines))
     if t.text_styles:
         lines = [
-            f"  static const TextStyle {n} = {_text_style_literal(sz, w)};"
-            for n, (sz, w) in sorted(t.text_styles.items())
+            f"  static const TextStyle {n} = {_text_style_literal(sz, w, fam)};"
+            for n, (sz, w, fam) in sorted(t.text_styles.items())
         ]
         sections.append(_const_class("AppTextStyles", lines))
     return "\n\n".join(sections)
@@ -438,8 +446,10 @@ def _const_class(name: str, lines: list[str]) -> str:
     return f"abstract final class {name} {{\n{body}\n}}"
 
 
-def _text_style_literal(size: Any, weight: Any) -> str:
+def _text_style_literal(size: Any, weight: Any, family: str | None = None) -> str:
     parts: list[str] = []
+    if family is not None:
+        parts.append(f"fontFamily: {_dart_str(family)}")
     if size is not None:
         parts.append(f"fontSize: {_num(size)}")
     if weight is not None:

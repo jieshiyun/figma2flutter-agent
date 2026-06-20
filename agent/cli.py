@@ -246,7 +246,12 @@ def _run_geometry_validate(
         print(f"warning: geometry validation failed: {exc}", file=sys.stderr)
         return
     finally:
+        # The keyed variant is a throwaway; remove it and the rect-dump test
+        # that imports it, so a later `flutter analyze` has no dangling import.
         keyed_path.unlink(missing_ok=True)
+        Path(args.flutter_root, "test", "visual_rects_test.dart").unlink(
+            missing_ok=True
+        )
 
     report_path = out_dir / "geometry_report.json"
     report_path.write_text(json.dumps(report.to_dict(), indent=2))

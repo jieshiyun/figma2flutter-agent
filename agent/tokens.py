@@ -24,7 +24,9 @@ class Tokens:
     def __init__(self, color_names: dict[str, str] | None = None) -> None:
         self.colors: dict[str, str] = {}  # name -> raw hex
         self.spacings: dict[str, Any] = {}  # name -> raw number
-        self.text_styles: dict[str, tuple[Any, Any]] = {}  # name -> (size, weight)
+        # name -> (size, weight, family); family is None when the design did
+        # not specify one (then the name stays family-free, e.g. `s14w400`).
+        self.text_styles: dict[str, tuple[Any, Any, str | None]] = {}
         # hex -> semantic Style name resolved by the parser (route B).
         self._color_names = color_names or {}
         # hex -> assigned const name, so a colour always interns to one name.
@@ -52,13 +54,13 @@ class Tokens:
         self.spacings[name] = value
         return f"AppSpacing.{name}"
 
-    def text_style(self, size: Any, weight: Any) -> str:
-        name = ""
+    def text_style(self, size: Any, weight: Any, family: str | None = None) -> str:
+        name = _sanitize_ident(family) if family else ""
         if size is not None:
             name += "s" + _ident_num(size)
         if weight is not None:
             name += "w" + str(int(weight))
-        self.text_styles[name] = (size, weight)
+        self.text_styles[name] = (size, weight, family)
         return f"AppTextStyles.{name}"
 
 

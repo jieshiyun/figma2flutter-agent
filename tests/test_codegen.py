@@ -523,3 +523,11 @@ def test_keyed_skips_component_references() -> None:
     }
     dart = codegen.generate(plan, keyed=True)
     assert "ValueKey('ref')" not in dart
+
+
+def test_text_emits_font_family() -> None:
+    ir = _screen(
+        [{"id": "t", "type": "text", "text": "Hi", "fontFamily": "Inter", "fontSize": 14, "fontWeight": 400}]
+    )
+    dart = codegen.generate(planner.plan(ir))
+    assert "fontFamily: 'Inter'" in dart

@@ -197,6 +197,7 @@ def _parse_text(node: dict) -> dict:
     }
     _set_optional(out, "name", node.get("name"))
     _set_optional(out, "size", _size(node))
+    _set_optional(out, "fontFamily", style.get("fontFamily"))
     _set_optional(out, "fontSize", style.get("fontSize"))
     _set_optional(out, "fontWeight", style.get("fontWeight"))
     _set_optional(out, "color", _solid_fill(node))

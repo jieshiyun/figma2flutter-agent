@@ -34,3 +34,30 @@ def test_build_rect_dump_test_embeds_class_size_and_output() -> None:
 def test_build_rect_dump_test_respects_custom_screen_file() -> None:
     src = screenshot.build_rect_dump_test("Home", 320, 640, screen_file="screen_keyed.dart")
     assert "import 'package:flutter_app/screen_keyed.dart';" in src
+
+def test_rect_dump_test_loads_fonts_when_given() -> None:
+    src = screenshot.build_rect_dump_test(
+        "Home", 375, 812, fonts=[("Inter", "fonts/Inter.ttf")]
+    )
+    assert "FontLoader('Inter')" in src
+    assert "rootBundle.load('fonts/Inter.ttf')" in src
+
+
+def test_rect_dump_test_without_fonts_has_no_loader() -> None:
+    src = screenshot.build_rect_dump_test("Home", 375, 812)
+    assert "FontLoader(" not in src
+
+
+def test_discover_fonts_lists_ttf_by_stem(tmp_path) -> None:
+    (tmp_path / "fonts").mkdir()
+    (tmp_path / "fonts" / "Inter.ttf").write_bytes(b"x")
+    (tmp_path / "fonts" / "Roboto.otf").write_bytes(b"x")
+    (tmp_path / "fonts" / "notes.txt").write_text("ignore")
+    assert screenshot.discover_fonts(tmp_path) == [
+        ("Inter", "fonts/Inter.ttf"),
+        ("Roboto", "fonts/Roboto.otf"),
+    ]
+
+
+def test_discover_fonts_empty_when_no_dir(tmp_path) -> None:
+    assert screenshot.discover_fonts(tmp_path) == []

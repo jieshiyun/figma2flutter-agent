@@ -1,17 +1,17 @@
 {
   "reference_size": [
-    390,
-    844
+    750,
+    1624
   ],
   "candidate_size": [
-    390,
-    844
+    375,
+    812
   ],
   "size_ratio": [
-    1.0,
-    1.0
+    0.5,
+    0.5
   ],
-  "pixel_mae": 0.0,
-  "ssim": 1.0,
-  "visual_score": 100.0
+  "pixel_mae": 0.079212,
+  "ssim": 0.781703,
+  "visual_score": 83.73
 }
