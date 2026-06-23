@@ -10,6 +10,7 @@ from agent import (
     codegen,
     figma_client,
     geometry,
+    geometry_repair,
     images,
     ir_parser,
     planner,
@@ -216,22 +217,15 @@ def _run_visual_validate(
         logger.save_visual_image("visual_screenshot", "visual_screenshot.png", shot)
 
 
-def _run_geometry_validate(
-    args: argparse.Namespace,
-    plan: dict,
-    figma: dict,
-    out_path: Path,
-    logger: RunLogger | None = None,
-) -> None:
-    """Diff the rendered layout geometry against the Figma node tree.
+def _measure_geometry(
+    args: argparse.Namespace, plan: dict, figma: dict, out_path: Path
+) -> "geometry.GeometryReport | None":
+    """Render a keyed screen, dump rects, and diff them against Figma targets.
 
-    Generates a keyed variant of the screen, renders it to dump each node's
-    rect, compares those against the Figma `absoluteBoundingBox` targets, and
-    prints + writes a per-node deviation report. Non-fatal: any failure is a
-    warning and generation still succeeds.
+    Returns the report, or None on failure (already warned). Cleans up the
+    throwaway keyed variant + rect-dump test so a later analyze stays clean.
     """
-    out_dir = out_path.parent
-    keyed_path = out_dir / f"{out_path.stem}_keyed.dart"
+    keyed_path = out_path.parent / f"{out_path.stem}_keyed.dart"
     try:
         screen_class, w, h = _screen_geometry(plan)
         keyed_path.write_text(codegen.generate(plan, keyed=True))
@@ -241,20 +235,18 @@ def _run_geometry_validate(
         actual = geometry.load_rects(json.loads(json_path.read_text()))
         target = geometry.collect_target_rects(figma)
         names = geometry.collect_names(figma)
-        report = geometry.diff_rects(target, actual, args.geometry_tolerance, names)
+        return geometry.diff_rects(target, actual, args.geometry_tolerance, names)
     except (RuntimeError, OSError, ValueError) as exc:
         print(f"warning: geometry validation failed: {exc}", file=sys.stderr)
-        return
+        return None
     finally:
-        # The keyed variant is a throwaway; remove it and the rect-dump test
-        # that imports it, so a later `flutter analyze` has no dangling import.
         keyed_path.unlink(missing_ok=True)
         Path(args.flutter_root, "test", "visual_rects_test.dart").unlink(
             missing_ok=True
         )
 
-    report_path = out_dir / "geometry_report.json"
-    report_path.write_text(json.dumps(report.to_dict(), indent=2))
+
+def _print_geometry_report(args: argparse.Namespace, report) -> None:
     print(
         f"Geometry: {report.matched} nodes matched "
         f"(of {report.target_total} Figma / {report.actual_total} rendered)"
@@ -269,8 +261,74 @@ def _run_geometry_validate(
             f"  {label}: {'/'.join(dev.kinds)} "
             f"(dx={dev.dx:+.0f} dy={dev.dy:+.0f} dw={dev.dw:+.0f} dh={dev.dh:+.0f})"
         )
-    print(f"Geometry report: {report_path}")
 
+
+def _run_geometry_validate(
+    args: argparse.Namespace,
+    plan: dict,
+    figma: dict,
+    out_path: Path,
+    logger: RunLogger | None = None,
+) -> None:
+    """Diff the rendered layout geometry against the Figma node tree.
+
+    Prints + writes a per-node deviation report. Non-fatal.
+    """
+    report = _measure_geometry(args, plan, figma, out_path)
+    if report is None:
+        return
+    report_path = out_path.parent / "geometry_report.json"
+    report_path.write_text(json.dumps(report.to_dict(), indent=2))
+    _print_geometry_report(args, report)
+    print(f"Geometry report: {report_path}")
+    if logger is not None:
+        logger.save_geometry_report(report.to_dict())
+
+
+def _run_geometry_repair(
+    args: argparse.Namespace,
+    ir: dict,
+    figma: dict,
+    out_path: Path,
+    logger: RunLogger | None = None,
+) -> None:
+    """Iteratively nudge IR nodes whose rendered rect drifted from Figma.
+
+    Each round: re-plan + ship the current IR, measure geometry, then apply
+    deterministic position/size patches (text/intrinsic nodes untouched).
+    Stops when nothing is actionable or attempts run out. The final shipped
+    `out_path` reflects the last patched IR.
+    """
+    for attempt in range(1, args.geometry_repair_attempts + 1):
+        plan = planner.plan(ir)
+        out_path.write_text(codegen.generate(plan))
+        report = _measure_geometry(args, plan, figma, out_path)
+        if report is None:
+            return
+        print(f"Geometry repair attempt {attempt}/{args.geometry_repair_attempts}:")
+        _print_geometry_report(args, report)
+        patched, notes = geometry_repair.patch_ir(
+            ir, report.deviations, args.geometry_tolerance
+        )
+        if not notes:
+            print("  no actionable deviations; stopping.")
+            break
+        for note in notes:
+            print(f"  patched {note}")
+        ir = patched
+    else:
+        # Loop exhausted attempts: ship + report the final patched IR.
+        plan = planner.plan(ir)
+        out_path.write_text(codegen.generate(plan))
+        report = _measure_geometry(args, plan, figma, out_path)
+        if report is not None:
+            _print_geometry_report(args, report)
+
+    if report is None:
+        return
+    report_path = out_path.parent / "geometry_report.json"
+    report_path.write_text(json.dumps(report.to_dict(), indent=2))
+    print(f"Geometry report: {report_path}")
     if logger is not None:
         logger.save_geometry_report(report.to_dict())
 
@@ -363,6 +421,19 @@ def main(argv: list[str] | None = None) -> int:
         help="How many worst deviations to print for --geometry-validate (default: 10).",
     )
     parser.add_argument(
+        "--repair-geometry",
+        action="store_true",
+        help="Iteratively nudge IR node positions/sizes toward the Figma "
+        "layout using the geometry diff (text/intrinsic nodes untouched). "
+        "Implies --geometry-validate.",
+    )
+    parser.add_argument(
+        "--geometry-repair-attempts",
+        type=int,
+        default=2,
+        help="Maximum geometry-repair rounds before stopping (default: 2).",
+    )
+    parser.add_argument(
         "--save-run",
         action="store_true",
         help="Save artifacts (input, IR, generated code, validation logs, summary) to runs/<date>-<slug>/.",
@@ -379,6 +450,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.max_repair_attempts < 1:
             print("error: --max-repair-attempts must be >= 1", file=sys.stderr)
             return 1
+
+    if args.repair_geometry and args.geometry_repair_attempts < 1:
+        print("error: --geometry-repair-attempts must be >= 1", file=sys.stderr)
+        return 1
 
     client = _make_llm_client()
     raw: dict | None = None
@@ -444,7 +519,9 @@ def main(argv: list[str] | None = None) -> int:
             _, node_id = figma_client.parse_figma_url(args.figma_url)
         _run_visual_validate(args, plan, out_path, node_id, logger)
 
-    if args.geometry_validate:
+    if args.repair_geometry:
+        _run_geometry_repair(args, ir, figma, out_path, logger)
+    elif args.geometry_validate:
         _run_geometry_validate(args, plan, figma, out_path, logger)
 
     success = False
