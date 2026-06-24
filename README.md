@@ -1,66 +1,127 @@
 # figma2flutter-agent
 
-AI-assisted pipeline that converts a Figma mobile screen into maintainable Flutter UI code.
+Convert a Figma mobile screen into maintainable Flutter UI code.
 
-See [claudecode.md](claudecode.md) for the full spec, MVP scope, and development order.
+`figma2flutter-agent` is a small, deterministic pipeline: it reads a Figma node
+(a local JSON file or a live node URL), lowers it to a compact Design IR, plans
+reusable components, and emits readable Dart. Optional layers validate the
+output with `flutter analyze`, diff the render against Figma for fidelity, and
+repair regressions.
 
-## Layout
-
-```
-agent/      pipeline modules (cli, figma_client, ir_parser, planner, codegen, validator, repair, llm)
-schemas/    Design IR + Component Plan JSON schemas
-examples/   sample Figma JSON, sample Design IR, sample generated Dart
-flutter_app/ Flutter app shell (target for generated code)
-tests/      pytest suite
-```
+> Scope: Flutter only, mobile portrait, static layout. See [CLAUDE.md](CLAUDE.md)
+> for the full spec and the step-by-step development log.
 
 ## Pipeline
 
 ```
-Figma JSON → Design IR → Component Plan → Flutter code → validate → repair
+Figma JSON ─► Design IR ─► Component Plan ─► Flutter code ─► validate ─► repair
 ```
 
-The **planner** turns Design IR into a Component Plan: each named frame is lifted
-into its own component so codegen emits one small `StatelessWidget` per component
-instead of one giant `build`. Every run writes `component_plan.generated.json`
-next to `--output`.
-
-By default the planner is **deterministic** (rule-based). Pass `--llm` to use an
-LLM planner instead — this requires a real `LLMClient` (see `agent/llm.py`); the
-default `StubLLMClient` fails loudly and tests use a fake client, so the LLM path
-is fully optional and never runs in CI.
+- **`ir_parser`** — Figma node tree → Design IR (frames, text, rectangles,
+  images, ellipses, components, icons, lines; auto-layout → flow, otherwise
+  absolute Stack positioning).
+- **`planner`** — IR → Component Plan: each named frame is lifted into its own
+  `StatelessWidget` and structurally-identical instances are deduped, so codegen
+  emits small, reusable widgets instead of one giant `build`.
+- **`codegen`** — Plan → Dart. Interns repeated style literals into
+  `AppColors` / `AppSpacing` / `AppTextStyles` design tokens (semantic color
+  names when the Figma file publishes Styles).
+- **`validator` / `repair`** — run `flutter analyze`; on failure, optionally ask
+  an LLM to patch the file and re-check.
 
 ## Quickstart
 
+Run from source — the only runtime dependencies are Pillow and numpy:
+
+```bash
+pip install pillow numpy pytest
+pytest                    # 244 tests, no network or Flutter required
+
+# Generate a screen from the bundled sample:
+python -m agent.cli \
+  --input examples/figma_sample.json \
+  --output flutter_app/lib/generated_screen.dart
+```
+
+The generated file passes `flutter analyze` cleanly inside `flutter_app/`.
+
+Optionally install as a package (needs a modern pip/setuptools) to get the
+`figma2flutter` command:
+
 ```bash
 pip install -e .
-pytest
+figma2flutter --input examples/figma_sample.json --output flutter_app/lib/generated_screen.dart
 ```
 
-Target CLI (not yet implemented):
+## CLI
+
+| Flag | Purpose |
+| --- | --- |
+| `--input PATH` | Local Figma node JSON (or a saved `/nodes` response). |
+| `--figma-url URL` | Fetch a node live via the Figma REST API (needs a token). |
+| `--figma-token TOKEN` | Figma token (defaults to `$FIGMA_TOKEN`). |
+| `--output PATH` | Where to write the generated Dart. |
+| `--validate` | Run `flutter analyze` after generation. |
+| `--repair` | On analyze failure, ask the LLM to fix the file and re-check. |
+| `--visual-validate` | Screenshot the screen and diff it against the Figma render (prints a 0–100 score). |
+| `--geometry-validate` | Diff each node's rendered rect against Figma's layout (per-node position/size deviations). |
+| `--repair-geometry` | Iteratively nudge node positions/sizes toward the Figma layout. |
+| `--save-run` | Archive inputs, plan, output, and reports under `runs/`. |
+| `--llm` | *(experimental)* Use the LLM planner — see limitations below. |
+
+Run `python -m agent.cli --help` for the full set (tolerances, attempt counts,
+reference images, scale factors).
+
+### Live Figma + LLM (optional)
 
 ```bash
-python -m agent.cli --input examples/figma_sample.json --output flutter_app/lib/generated_screen.dart
+export FIGMA_TOKEN=...                 # Figma personal access token
+export DEEPSEEK_API_KEY=...            # enables --repair / --llm (DeepSeek)
+# optional: DEEPSEEK_MODEL (default deepseek-v4-flash), DEEPSEEK_BASE_URL
+
+python -m agent.cli --figma-url "https://www.figma.com/design/<key>/...?node-id=..." \
+  --output flutter_app/lib/screen.dart --repair --visual-validate
 ```
 
-## Design IR v0.1
+Without `DEEPSEEK_API_KEY` the pipeline stays fully deterministic; the LLM path
+is never exercised in tests (a fake client is injected).
 
-The IR is the contract between parser and codegen. See [schemas/design_ir.schema.json](schemas/design_ir.schema.json) and the worked example in [examples/design_ir_sample.json](examples/design_ir_sample.json).
+## What's supported
 
-Node types: `screen` (root only), `frame`, `text`, `rectangle`, `image`, `button`.
+- **Nodes:** frame, text, rectangle, image, ellipse, INSTANCE/GROUP/COMPONENT,
+  rounded-rect vectors, icon vectors (rasterized via the Figma image API on a
+  live source), and axis-aligned LINE dividers.
+- **Layout:** vertical/horizontal auto-layout (`Column`/`Row` with spacing,
+  padding, alignment, `spaceBetween`), per-child counter-axis fill
+  (`layoutAlign`), and absolute Stack positioning for non-auto-layout frames.
+- **Style:** solid fills, borders, corner radius, image fills, real bundled
+  fonts (Inter), Figma line-height, and deduped design tokens.
 
-### Tradeoffs
+## Limitations
 
-The schema is deliberately narrow. Each decision below trades expressiveness for a smaller, more deterministic codegen surface.
+- **LLM planner (`--llm`) is experimental.** It adds no layout-quality gain over
+  the deterministic planner today and can truncate on large pages. The supported
+  LLM capability is `--repair` (fixing `flutter analyze` errors). DeepSeek v4 is
+  text-only, so it does not consume the visual/geometry diffs.
+- **Diagonal vectors** (arbitrary path geometry) are skipped — only axis-aligned
+  lines and rounded-rect vectors are reproduced.
+- **Icon rasterization** needs a live `--figma-url` (file key + token); a
+  saved-file run emits same-size placeholders so layout stays correct.
+- Single mobile-portrait viewport; no interactions, state, or responsive
+  breakpoints.
 
-- **Flat hex colors (`#RRGGBB` / `#RRGGBBAA`).** No gradients, no opacity tokens, no theme references. Designs that depend on gradients or design tokens won't round-trip — fold them into solid colors in the parser.
-- **Six concrete node types, no generic vector or component instance.** Anything more exotic in the source Figma file must be flattened or rejected by the parser.
-- **`button` is a first-class node, not a tagged frame.** Figma has no native button — the parser is expected to recognize the "button-like frame" pattern (frame + single text child + fill + corner radius) and lift it. Cleaner codegen, but loses fidelity if the source button has icons or multiple children.
-- **Flow layout only.** Every container has a `direction` (`vertical` | `horizontal`), `spacing`, `alignment`, `justify`, and `padding`. No absolute positioning, no constraints, no z-index. Free-form designs must be re-laid out as auto-layout before parsing.
-- **Fixed-pixel sizing.** `size` is `{ width, height }` in logical pixels — no "fill parent" or "hug contents". Deterministic but rigid; no responsive resizing yet.
-- **Padding is an explicit 4-tuple.** No shorthand (`8` or `[8, 16]`). One canonical form, no parsing ambiguity, slightly more verbose.
-- **`image.src` is an opaque string.** Asset path or URL — the codegen layer decides how to resolve it. Defers the asset-pipeline decision.
-- **No interactions, no state, no variants.** Static rendering only — matches MVP scope.
-- **Single mobile-portrait viewport.** No breakpoints, no device targets beyond a single `screen.size`.
+## Repository layout
 
-These constraints will be revisited once the rule-based codegen path works end-to-end.
+```
+agent/       pipeline modules (cli, figma_client, ir_parser, planner, codegen,
+             validator, repair, llm, tokens, images, screenshot, visual,
+             geometry, geometry_repair)
+schemas/     Design IR + Component Plan JSON schemas
+examples/    sample Figma JSON, sample Design IR, sample generated Dart
+flutter_app/ Flutter gallery app (target for generated code)
+tests/       pytest suite (244 tests; network and Flutter are mocked)
+```
+
+## License
+
+[MIT](LICENSE).
