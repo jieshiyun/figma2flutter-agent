@@ -7,21 +7,8 @@ from typing import Any
 import pytest
 
 from agent import codegen, planner
-from agent.llm import LLMClient
 
 ROOT = Path(__file__).resolve().parent.parent
-
-
-class FakeLLM:
-    """Records the prompt it received and returns a canned response."""
-
-    def __init__(self, response: str) -> None:
-        self.response = response
-        self.calls: list[str] = []
-
-    def complete(self, prompt: str) -> str:
-        self.calls.append(prompt)
-        return self.response
 
 
 def _screen(children: list[dict], **overrides: Any) -> dict:
@@ -163,79 +150,3 @@ def test_unsupported_ir_version_raises() -> None:
 def test_non_screen_root_raises() -> None:
     with pytest.raises(ValueError, match="screen"):
         planner.plan({"version": "0.1", "root": {"type": "frame"}})
-
-
-# ---------------------------------------------------------------------------
-# Optional LLM planner
-# ---------------------------------------------------------------------------
-
-_VALID_PLAN = {
-    "version": "0.1",
-    "rootComponent": "Home",
-    "components": [
-        {
-            "name": "Home",
-            "root": {
-                "id": "s",
-                "type": "screen",
-                "layout": {"direction": "vertical"},
-                "children": [],
-            },
-        }
-    ],
-}
-
-
-def test_plan_with_llm_parses_json_response() -> None:
-    client = FakeLLM(json.dumps(_VALID_PLAN))
-    out = planner.plan_with_llm(_screen([]), client)
-    assert out == _VALID_PLAN
-    assert len(client.calls) == 1
-
-
-def test_plan_with_llm_strips_code_fence() -> None:
-    fenced = "```json\n" + json.dumps(_VALID_PLAN) + "\n```"
-    out = planner.plan_with_llm(_screen([]), FakeLLM(fenced))
-    assert out == _VALID_PLAN
-
-
-def test_prompt_includes_ir_and_asks_for_json() -> None:
-    client = FakeLLM(json.dumps(_VALID_PLAN))
-    planner.plan_with_llm(_screen([], name="Profile"), client)
-    prompt = client.calls[0]
-    assert "Profile" in prompt
-    assert "JSON" in prompt
-    assert "Component Plan" in prompt
-
-
-def test_plan_with_llm_empty_response_raises() -> None:
-    with pytest.raises(ValueError, match="empty"):
-        planner.plan_with_llm(_screen([]), FakeLLM("   \n  "))
-
-
-def test_plan_with_llm_invalid_json_raises() -> None:
-    with pytest.raises(ValueError, match="invalid JSON"):
-        planner.plan_with_llm(_screen([]), FakeLLM("{not json"))
-
-
-def test_plan_with_llm_wrong_version_raises() -> None:
-    bad = dict(_VALID_PLAN, version="0.9")
-    with pytest.raises(ValueError, match="unsupported plan version"):
-        planner.plan_with_llm(_screen([]), FakeLLM(json.dumps(bad)))
-
-
-def test_plan_with_llm_missing_components_raises() -> None:
-    bad = {"version": "0.1", "rootComponent": "Home"}
-    with pytest.raises(ValueError, match="components"):
-        planner.plan_with_llm(_screen([]), FakeLLM(json.dumps(bad)))
-
-
-def test_plan_with_llm_missing_root_component_raises() -> None:
-    bad = {"version": "0.1", "components": _VALID_PLAN["components"]}
-    with pytest.raises(ValueError, match="rootComponent"):
-        planner.plan_with_llm(_screen([]), FakeLLM(json.dumps(bad)))
-
-
-def test_fake_llm_satisfies_protocol() -> None:
-    client: LLMClient = FakeLLM("x")
-    assert client.complete("ping") == "x"

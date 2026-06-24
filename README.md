@@ -69,7 +69,7 @@ figma2flutter --input examples/figma_sample.json --output flutter_app/lib/genera
 | `--repair-geometry` | Iteratively nudge node positions/sizes toward the Figma layout. |
 | `--save-run` | Archive inputs, plan, output, and reports under `runs/`. |
 | `--llm-names` | Ask the LLM to propose semantic `AppColors` names for colors with no published Figma Style. Non-fatal. |
-| `--llm` | *(experimental)* Use the LLM planner — see limitations below. |
+| `--llm` | Infer flow layout — re-flow absolutely-positioned (Stack) frames into idiomatic `Row`/`Column` from their geometry. Per-frame, non-fatal. |
 
 Run `python -m agent.cli --help` for the full set (tolerances, attempt counts,
 reference images, scale factors).
@@ -105,10 +105,12 @@ injected) — makes zero network calls.
 
 ## Limitations
 
-- **LLM planner (`--llm`) is experimental.** It adds no layout-quality gain over
-  the deterministic planner today and can truncate on large pages. The supported
-  LLM capability is `--repair` (fixing `flutter analyze` errors). DeepSeek v4 is
-  text-only, so it does not consume the visual/geometry diffs.
+- **LLM use is opt-in and bounded.** The LLM only assists where deterministic
+  rules can't: layout inference (`--llm`, Stack→flow), analyze-error repair
+  (`--repair`), and semantic color naming (`--llm-names`). Structure, geometry,
+  and tokens stay rule-based. `--llm` does single-level flow inference per frame
+  (nested regrouping is future work); DeepSeek v4 is text-only, so it does not
+  consume the visual/geometry diffs.
 - **Diagonal vectors** (arbitrary path geometry) are skipped — only axis-aligned
   lines and rounded-rect vectors are reproduced.
 - **Icon rasterization** needs a live `--figma-url` (file key + token); a

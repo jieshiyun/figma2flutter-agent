@@ -39,6 +39,31 @@ ROOT = Path(__file__).resolve().parent.parent
 SAMPLE = ROOT / "examples" / "figma_sample.json"
 
 
+def _stack_input(tmp_path: Path) -> Path:
+    """Write a Figma file whose inner 'Panel' frame has no auto-layout, so the
+    parser lowers it to a Stack — the case --llm layout inference targets."""
+    fig = {
+        "id": "1:1", "name": "Screen", "type": "FRAME",
+        "absoluteBoundingBox": {"x": 0, "y": 0, "width": 300, "height": 400},
+        "layoutMode": "VERTICAL",
+        "children": [
+            {
+                "id": "1:2", "name": "Panel", "type": "FRAME",
+                "absoluteBoundingBox": {"x": 0, "y": 0, "width": 300, "height": 200},
+                "children": [
+                    {"id": "1:3", "type": "TEXT", "characters": "A",
+                     "absoluteBoundingBox": {"x": 0, "y": 0, "width": 100, "height": 20}},
+                    {"id": "1:4", "type": "TEXT", "characters": "B",
+                     "absoluteBoundingBox": {"x": 0, "y": 40, "width": 100, "height": 20}},
+                ],
+            }
+        ],
+    }
+    path = tmp_path / "stack_input.json"
+    path.write_text(json.dumps(fig))
+    return path
+
+
 def test_make_llm_client_stub_without_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     assert isinstance(cli._make_llm_client(), StubLLMClient)
@@ -664,44 +689,32 @@ def test_save_run_disabled_by_default(tmp_path: Path) -> None:
     assert not runs_dir.exists()
 
 
-def test_llm_flag_without_client_errors_clearly(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+def test_llm_flag_without_key_is_non_fatal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    # With no API key, layout inference is skipped per-frame and generation
+    # continues: the Panel stays a Stack rather than failing the run.
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     out = tmp_path / "x.dart"
-    rc = cli.main(["--input", str(SAMPLE), "--output", str(out), "--llm"])
-    assert rc == 1
-    assert "no LLM client" in capsys.readouterr().err
-    assert not out.exists()
+    rc = cli.main(["--input", str(_stack_input(tmp_path)), "--output", str(out), "--llm"])
+    assert rc == 0
+    assert "Positioned(" in out.read_text()
 
 
-def test_llm_flag_uses_llm_planner(
+def test_llm_flag_infers_flow_layout(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    plan_json = json.dumps(
-        {
-            "version": "0.1",
-            "rootComponent": "ProfileScreen",
-            "components": [
-                {
-                    "name": "ProfileScreen",
-                    "root": {
-                        "id": "s",
-                        "type": "screen",
-                        "layout": {"direction": "vertical"},
-                        "children": [{"id": "t", "type": "text", "text": "Hi"}],
-                    },
-                }
-            ],
-        }
-    )
-    client = FakeLLM(responses=[plan_json])
+    resp = json.dumps({"direction": "vertical", "order": ["1:3", "1:4"], "spacing": 20})
+    client = FakeLLM(responses=[resp])
     monkeypatch.setattr(cli, "_make_llm_client", lambda: client)
 
     out = tmp_path / "x.dart"
-    rc = cli.main(["--input", str(SAMPLE), "--output", str(out), "--llm"])
+    rc = cli.main(["--input", str(_stack_input(tmp_path)), "--output", str(out), "--llm"])
     assert rc == 0
-    assert len(client.calls) == 1
-    assert "class ProfileScreen extends StatelessWidget" in out.read_text()
+    assert len(client.calls) == 1  # one request for the one stack frame
+    dart = out.read_text()
+    assert "Column(" in dart
+    assert "Positioned(" not in dart
 
 
 def test_make_llm_client_returns_stub_by_default() -> None:

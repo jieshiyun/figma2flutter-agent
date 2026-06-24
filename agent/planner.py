@@ -4,7 +4,6 @@ import json
 from typing import Any
 
 from agent.codegen import _class_name
-from agent.llm import LLMClient, strip_code_fence
 
 PLAN_VERSION = "0.1"
 
@@ -125,70 +124,3 @@ def _rewrite_refs(node: dict, alias: dict[str, str]) -> None:
                 child["ref"] = alias[child["ref"]]
         else:
             _rewrite_refs(child, alias)
-
-
-# ---------------------------------------------------------------------------
-# Optional LLM planner
-# ---------------------------------------------------------------------------
-
-_PROMPT_TEMPLATE = """\
-You are turning a mobile UI Design IR into a Component Plan for Flutter codegen.
-
-A Component Plan groups the screen into named, reusable Flutter components so
-the generated code stays maintainable. Return ONLY a JSON object, with no
-explanations, commentary, or markdown code fences.
-
-The Component Plan v0.1 schema is:
-- "version": the string "0.1"
-- "rootComponent": the name of the entry component (the screen)
-- "components": a list of {{ "name": <PascalCase>, "root": <node> }}
-
-Each component's "root" is a screen or frame node reused verbatim from the
-Design IR node shapes (frame/text/rectangle/image/button + layout). To
-reference one component from inside another, use a node of the form
-{{ "type": "component", "ref": <component name> }}. Lift meaningful, named or
-repeated groups into their own components; keep trivial wrappers inline.
-
---- Design IR ---
-{ir}
---- end Design IR ---
-"""
-
-
-def build_prompt(ir: dict) -> str:
-    """Build the deterministic prompt sent to the LLM planner."""
-    return _PROMPT_TEMPLATE.format(ir=json.dumps(ir, indent=2, ensure_ascii=False))
-
-
-def plan_with_llm(ir: dict, client: LLMClient) -> dict:
-    """Ask the LLM to produce a Component Plan from Design IR.
-
-    The response is stripped of any wrapping code fence, parsed as JSON, and
-    lightly validated. Deeper structural validity is enforced downstream by
-    codegen.
-    """
-    prompt = build_prompt(ir)
-    response = client.complete(prompt)
-    text = strip_code_fence(response).strip()
-    if not text:
-        raise ValueError("LLM returned empty plan response")
-    try:
-        result: Any = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"LLM returned invalid JSON: {exc}") from exc
-    _validate_plan_shape(result)
-    if ir.get("tokens") and "tokens" not in result:
-        result["tokens"] = ir["tokens"]
-    return result
-
-
-def _validate_plan_shape(plan_obj: Any) -> None:
-    if not isinstance(plan_obj, dict):
-        raise ValueError("plan must be a JSON object")
-    if plan_obj.get("version") != PLAN_VERSION:
-        raise ValueError(f"unsupported plan version: {plan_obj.get('version')!r}")
-    if not plan_obj.get("rootComponent"):
-        raise ValueError("plan missing 'rootComponent'")
-    components = plan_obj.get("components")
-    if not isinstance(components, list) or not components:
-        raise ValueError("plan must have a non-empty 'components' list")

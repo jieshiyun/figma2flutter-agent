@@ -13,6 +13,7 @@ from agent import (
     geometry_repair,
     images,
     ir_parser,
+    layout_infer,
     naming,
     planner,
     repair,
@@ -125,6 +126,26 @@ def _maybe_download_icons(
     missing = len(icon_ids) - len(asset_map)
     if missing:
         warnings.append(f"{missing} icon(s) had no render URL (placeholder used)")
+
+
+def _maybe_infer_layout(
+    args: argparse.Namespace, ir: dict, client: LLMClient, warnings: list[str]
+) -> dict:
+    """Re-flow absolutely-positioned (stack) frames into Row/Column via the LLM.
+
+    Opt-in via --llm. Non-fatal per frame: a missing key / bad response / unclear
+    layout leaves that frame as a Stack. Returns the patched IR (or the original).
+    """
+    if not args.llm:
+        return ir
+    patched, notes = layout_infer.infer_flow_layouts(ir, client)
+    reflowed = sum(1 for n in notes if "->" in n)
+    skipped = sum(1 for n in notes if "skipped" in n)
+    if reflowed:
+        print(f"LLM re-flowed {reflowed} stack frame(s) into Row/Column")
+    if skipped:
+        warnings.append(f"LLM layout inference skipped {skipped} frame(s)")
+    return patched
 
 
 def _maybe_name_colors(
@@ -380,10 +401,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--llm",
         action="store_true",
-        help="(experimental) Use the LLM planner instead of the deterministic "
-        "planner. Flaky on large pages (plan JSON can truncate) and adds no "
-        "layout-quality gain today; prefer the deterministic planner. Repair "
-        "(--repair) is the supported LLM capability.",
+        help="(LLM) Infer flow layout: re-flow absolutely-positioned (Stack) "
+        "frames into idiomatic Row/Column from their geometry (needs "
+        "DEEPSEEK_API_KEY). Per-frame and non-fatal — unclear frames stay Stack.",
     )
     parser.add_argument(
         "--llm-names",
@@ -492,7 +512,8 @@ def main(argv: list[str] | None = None) -> int:
         _maybe_download_images(args, ir, warnings)
         _maybe_download_icons(args, ir, warnings)
         _maybe_name_colors(args, ir, client, warnings)
-        plan = planner.plan_with_llm(ir, client) if args.llm else planner.plan(ir)
+        ir = _maybe_infer_layout(args, ir, client, warnings)
+        plan = planner.plan(ir)
         dart = codegen.generate(plan)
     except FileNotFoundError as exc:
         print(f"error: input file not found: {exc.filename}", file=sys.stderr)
