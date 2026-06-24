@@ -25,8 +25,7 @@ Figma JSON ─► Design IR ─► Component Plan ─► Flutter code ─► val
   emits small, reusable widgets instead of one giant `build`.
 - **`codegen`** — Plan → Dart. Interns repeated style literals into
   `AppColors` / `AppSpacing` / `AppTextStyles` design tokens (semantic color
-  names when the Figma file publishes Styles, or — with `--llm-names` — names
-  proposed by the LLM for un-styled colors).
+  names when the Figma file publishes Styles).
 - **`validator` / `repair`** — run `flutter analyze`; on failure, optionally ask
   an LLM to patch the file and re-check.
 
@@ -68,7 +67,6 @@ figma2flutter --input examples/figma_sample.json --output flutter_app/lib/genera
 | `--geometry-validate` | Diff each node's rendered rect against Figma's layout (per-node position/size deviations). |
 | `--repair-geometry` | Iteratively nudge node positions/sizes toward the Figma layout. |
 | `--save-run` | Archive inputs, plan, output, and reports under `runs/`. |
-| `--llm-names` | Ask the LLM to propose semantic `AppColors` names for colors with no published Figma Style. Non-fatal. |
 | `--llm` | Infer flow layout — re-flow absolutely-positioned (Stack) frames into idiomatic `Row`/`Column` from their geometry. Per-frame, non-fatal. |
 
 Run `python -m agent.cli --help` for the full set (tolerances, attempt counts,
@@ -106,11 +104,10 @@ injected) — makes zero network calls.
 ## Limitations
 
 - **LLM use is opt-in and bounded.** The LLM only assists where deterministic
-  rules can't: layout inference (`--llm`, Stack→flow), analyze-error repair
-  (`--repair`), and semantic color naming (`--llm-names`). Structure, geometry,
-  and tokens stay rule-based. `--llm` does single-level flow inference per frame
-  (nested regrouping is future work); DeepSeek v4 is text-only, so it does not
-  consume the visual/geometry diffs.
+  rules can't: layout inference (`--llm`, Stack→flow) and analyze-error repair
+  (`--repair`). Structure, geometry, and tokens stay rule-based. `--llm` does
+  single-level flow inference per frame (nested regrouping is future work);
+  DeepSeek v4 is text-only, so it does not consume the visual/geometry diffs.
 - **Diagonal vectors** (arbitrary path geometry) are skipped — only axis-aligned
   lines and rounded-rect vectors are reproduced.
 - **Icon rasterization** needs a live `--figma-url` (file key + token); a
