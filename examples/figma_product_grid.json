@@ -1,0 +1,185 @@
+{
+  "id": "4:1",
+  "name": "ShopScreen",
+  "type": "FRAME",
+  "absoluteBoundingBox": { "x": 0, "y": 0, "width": 390, "height": 844 },
+  "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1, "a": 1 } }],
+  "layoutMode": "VERTICAL",
+  "itemSpacing": 20,
+  "paddingTop": 24,
+  "paddingRight": 20,
+  "paddingBottom": 24,
+  "paddingLeft": 20,
+  "primaryAxisAlignItems": "MIN",
+  "counterAxisAlignItems": "STRETCH",
+  "children": [
+    {
+      "id": "4:2",
+      "type": "TEXT",
+      "characters": "Shop",
+      "absoluteBoundingBox": { "x": 20, "y": 24, "width": 80, "height": 36 },
+      "style": { "fontFamily": "Inter", "fontSize": 28, "fontWeight": 700, "lineHeightPx": 33.88 },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+    },
+    {
+      "id": "4:3",
+      "name": "Row1",
+      "type": "FRAME",
+      "absoluteBoundingBox": { "x": 20, "y": 80, "width": 350, "height": 184 },
+      "layoutMode": "HORIZONTAL",
+      "itemSpacing": 20,
+      "primaryAxisAlignItems": "SPACE_BETWEEN",
+      "counterAxisAlignItems": "MIN",
+      "children": [
+        {
+          "id": "4:4",
+          "name": "Card",
+          "type": "FRAME",
+          "absoluteBoundingBox": { "x": 20, "y": 80, "width": 165, "height": 184 },
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 8,
+          "counterAxisAlignItems": "MIN",
+          "children": [
+            {
+              "id": "4:5",
+              "type": "RECTANGLE",
+              "absoluteBoundingBox": { "x": 20, "y": 80, "width": 165, "height": 120 },
+              "cornerRadius": 12,
+              "fills": [{ "type": "SOLID", "color": { "r": 0.91, "g": 0.93, "b": 0.96, "a": 1 } }]
+            },
+            {
+              "id": "4:6",
+              "type": "TEXT",
+              "characters": "Studio Headphones",
+              "absoluteBoundingBox": { "x": 20, "y": 208, "width": 165, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 15, "fontWeight": 600, "lineHeightPx": 18.15 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+            },
+            {
+              "id": "4:7",
+              "type": "TEXT",
+              "characters": "$129",
+              "absoluteBoundingBox": { "x": 20, "y": 236, "width": 50, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 700, "lineHeightPx": 19.36 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }]
+            }
+          ]
+        },
+        {
+          "id": "4:8",
+          "name": "Card",
+          "type": "FRAME",
+          "absoluteBoundingBox": { "x": 205, "y": 80, "width": 165, "height": 184 },
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 8,
+          "counterAxisAlignItems": "MIN",
+          "children": [
+            {
+              "id": "4:9",
+              "type": "RECTANGLE",
+              "absoluteBoundingBox": { "x": 205, "y": 80, "width": 165, "height": 120 },
+              "cornerRadius": 12,
+              "fills": [{ "type": "SOLID", "color": { "r": 0.98, "g": 0.91, "b": 0.91, "a": 1 } }]
+            },
+            {
+              "id": "4:10",
+              "type": "TEXT",
+              "characters": "Mini Speaker",
+              "absoluteBoundingBox": { "x": 205, "y": 208, "width": 165, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 15, "fontWeight": 600, "lineHeightPx": 18.15 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+            },
+            {
+              "id": "4:11",
+              "type": "TEXT",
+              "characters": "$89",
+              "absoluteBoundingBox": { "x": 205, "y": 236, "width": 50, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 700, "lineHeightPx": 19.36 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4:12",
+      "name": "Row2",
+      "type": "FRAME",
+      "absoluteBoundingBox": { "x": 20, "y": 284, "width": 350, "height": 184 },
+      "layoutMode": "HORIZONTAL",
+      "itemSpacing": 20,
+      "primaryAxisAlignItems": "SPACE_BETWEEN",
+      "counterAxisAlignItems": "MIN",
+      "children": [
+        {
+          "id": "4:13",
+          "name": "Card",
+          "type": "FRAME",
+          "absoluteBoundingBox": { "x": 20, "y": 284, "width": 165, "height": 184 },
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 8,
+          "counterAxisAlignItems": "MIN",
+          "children": [
+            {
+              "id": "4:14",
+              "type": "RECTANGLE",
+              "absoluteBoundingBox": { "x": 20, "y": 284, "width": 165, "height": 120 },
+              "cornerRadius": 12,
+              "fills": [{ "type": "SOLID", "color": { "r": 0.91, "g": 0.96, "b": 0.93, "a": 1 } }]
+            },
+            {
+              "id": "4:15",
+              "type": "TEXT",
+              "characters": "Smart Watch",
+              "absoluteBoundingBox": { "x": 20, "y": 412, "width": 165, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 15, "fontWeight": 600, "lineHeightPx": 18.15 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+            },
+            {
+              "id": "4:16",
+              "type": "TEXT",
+              "characters": "$199",
+              "absoluteBoundingBox": { "x": 20, "y": 440, "width": 50, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 700, "lineHeightPx": 19.36 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }]
+            }
+          ]
+        },
+        {
+          "id": "4:17",
+          "name": "Card",
+          "type": "FRAME",
+          "absoluteBoundingBox": { "x": 205, "y": 284, "width": 165, "height": 184 },
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 8,
+          "counterAxisAlignItems": "MIN",
+          "children": [
+            {
+              "id": "4:18",
+              "type": "RECTANGLE",
+              "absoluteBoundingBox": { "x": 205, "y": 284, "width": 165, "height": 120 },
+              "cornerRadius": 12,
+              "fills": [{ "type": "SOLID", "color": { "r": 0.96, "g": 0.94, "b": 0.91, "a": 1 } }]
+            },
+            {
+              "id": "4:19",
+              "type": "TEXT",
+              "characters": "Action Camera",
+              "absoluteBoundingBox": { "x": 205, "y": 412, "width": 165, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 15, "fontWeight": 600, "lineHeightPx": 18.15 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+            },
+            {
+              "id": "4:20",
+              "type": "TEXT",
+              "characters": "$349",
+              "absoluteBoundingBox": { "x": 205, "y": 440, "width": 50, "height": 20 },
+              "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 700, "lineHeightPx": 19.36 },
+              "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

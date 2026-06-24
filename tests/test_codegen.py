@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from agent import codegen, planner
-from agent.codegen import _class_name, _color, _edge_insets
+from agent.codegen import _class_name, _color, _dart_str, _edge_insets
 
 ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOTS = Path(__file__).resolve().parent / "snapshots"
@@ -581,6 +581,18 @@ def test_stretch_demoted_when_a_child_hugs() -> None:
     assert "CrossAxisAlignment.start" in dart
     assert "CrossAxisAlignment.stretch" not in dart
     assert "width: double.infinity" in dart
+
+
+def test_dart_str_escapes_dollar_sign() -> None:
+    # `$` triggers Dart string interpolation; a price like "$199" must escape it.
+    assert _dart_str("$199") == r"'\$199'"
+    assert _dart_str("a'b\\c\nd") == r"'a\'b\\c\nd'"
+
+
+def test_text_with_price_emits_escaped_dollar() -> None:
+    ir = _screen([{"id": "p", "type": "text", "text": "$199"}])
+    dart = _gen(ir)
+    assert r"'\$199'" in dart
 
 
 def test_row_does_not_expand_fill_child() -> None:

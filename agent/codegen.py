@@ -218,8 +218,20 @@ def _children_arg(children: list[dict], rendered: list[str] | None = None) -> st
 def _emit_frame(node: dict) -> str:
     inner = _emit_layout(node)
     size = node.get("size") or {}
-    has_w = size.get("width") is not None
-    has_h = size.get("height") is not None
+    w = size.get("width")
+    h = size.get("height")
+    # Auto-layout frames hug their main axis in Figma (they size to content).
+    # Pinning that axis to the source box risks a RenderFlex overflow when the
+    # rendered content differs by a few px (font metrics, line height). Drop the
+    # main-axis dimension and let the Column/Row hug; keep the cross axis. Stack
+    # frames keep both — their absolutely-positioned children need the box.
+    direction = (node.get("layout") or {}).get("direction")
+    if direction == "vertical":
+        h = None
+    elif direction == "horizontal":
+        w = None
+    has_w = w is not None
+    has_h = h is not None
     fill_args = _box_fill_args(
         node.get("background"),
         node.get("cornerRadius"),
@@ -230,9 +242,9 @@ def _emit_frame(node: dict) -> str:
         return inner
     args: list[str] = []
     if has_w:
-        args.append(f"width: {_num(size['width'])}")
+        args.append(f"width: {_num(w)}")
     if has_h:
-        args.append(f"height: {_num(size['height'])}")
+        args.append(f"height: {_num(h)}")
     args.append(f"child: {inner}")
     # A Container with only width/height triggers the sized_box_for_whitespace
     # lint; use a SizedBox when there is no fill/decoration to apply.
@@ -561,7 +573,14 @@ def _num(n: Any) -> str:
 
 
 def _dart_str(s: str) -> str:
-    escaped = s.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n")
+    # Escape backslash first, then `$` (Dart string interpolation, e.g. a price
+    # like "$199"), the single quote, and newlines.
+    escaped = (
+        s.replace("\\", "\\\\")
+        .replace("$", "\\$")
+        .replace("'", "\\'")
+        .replace("\n", "\\n")
+    )
     return f"'{escaped}'"
 
 

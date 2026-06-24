@@ -1,0 +1,130 @@
+{
+  "id": "3:1",
+  "name": "LoginScreen",
+  "type": "FRAME",
+  "absoluteBoundingBox": { "x": 0, "y": 0, "width": 390, "height": 844 },
+  "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1, "a": 1 } }],
+  "layoutMode": "VERTICAL",
+  "itemSpacing": 16,
+  "paddingTop": 120,
+  "paddingRight": 24,
+  "paddingBottom": 24,
+  "paddingLeft": 24,
+  "primaryAxisAlignItems": "MIN",
+  "counterAxisAlignItems": "CENTER",
+  "children": [
+    {
+      "id": "3:2",
+      "name": "Logo",
+      "type": "ELLIPSE",
+      "absoluteBoundingBox": { "x": 159, "y": 120, "width": 72, "height": 72 },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }]
+    },
+    {
+      "id": "3:3",
+      "type": "TEXT",
+      "characters": "Welcome back",
+      "absoluteBoundingBox": { "x": 110, "y": 208, "width": 170, "height": 34 },
+      "style": { "fontFamily": "Inter", "fontSize": 28, "fontWeight": 700, "lineHeightPx": 33.88, "textAlignHorizontal": "CENTER" },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+    },
+    {
+      "id": "3:4",
+      "type": "TEXT",
+      "characters": "Sign in to continue",
+      "absoluteBoundingBox": { "x": 130, "y": 250, "width": 130, "height": 20 },
+      "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 400, "lineHeightPx": 19.36, "textAlignHorizontal": "CENTER" },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.42, "g": 0.45, "b": 0.5, "a": 1 } }]
+    },
+    {
+      "id": "3:5",
+      "name": "EmailField",
+      "type": "FRAME",
+      "layoutAlign": "STRETCH",
+      "absoluteBoundingBox": { "x": 24, "y": 286, "width": 342, "height": 52 },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.97, "g": 0.98, "b": 0.99, "a": 1 } }],
+      "strokes": [{ "type": "SOLID", "color": { "r": 0.82, "g": 0.84, "b": 0.86, "a": 1 } }],
+      "strokeWeight": 1,
+      "cornerRadius": 10,
+      "layoutMode": "HORIZONTAL",
+      "primaryAxisAlignItems": "MIN",
+      "counterAxisAlignItems": "CENTER",
+      "paddingTop": 16,
+      "paddingRight": 16,
+      "paddingBottom": 16,
+      "paddingLeft": 16,
+      "children": [
+        {
+          "id": "3:6",
+          "type": "TEXT",
+          "characters": "Email",
+          "absoluteBoundingBox": { "x": 40, "y": 302, "width": 60, "height": 20 },
+          "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 400, "lineHeightPx": 19.36 },
+          "fills": [{ "type": "SOLID", "color": { "r": 0.61, "g": 0.64, "b": 0.69, "a": 1 } }]
+        }
+      ]
+    },
+    {
+      "id": "3:7",
+      "name": "PasswordField",
+      "type": "FRAME",
+      "layoutAlign": "STRETCH",
+      "absoluteBoundingBox": { "x": 24, "y": 354, "width": 342, "height": 52 },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.97, "g": 0.98, "b": 0.99, "a": 1 } }],
+      "strokes": [{ "type": "SOLID", "color": { "r": 0.82, "g": 0.84, "b": 0.86, "a": 1 } }],
+      "strokeWeight": 1,
+      "cornerRadius": 10,
+      "layoutMode": "HORIZONTAL",
+      "primaryAxisAlignItems": "MIN",
+      "counterAxisAlignItems": "CENTER",
+      "paddingTop": 16,
+      "paddingRight": 16,
+      "paddingBottom": 16,
+      "paddingLeft": 16,
+      "children": [
+        {
+          "id": "3:8",
+          "type": "TEXT",
+          "characters": "Password",
+          "absoluteBoundingBox": { "x": 40, "y": 370, "width": 80, "height": 20 },
+          "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 400, "lineHeightPx": 19.36 },
+          "fills": [{ "type": "SOLID", "color": { "r": 0.61, "g": 0.64, "b": 0.69, "a": 1 } }]
+        }
+      ]
+    },
+    {
+      "id": "3:9",
+      "name": "SignInButton",
+      "type": "FRAME",
+      "layoutAlign": "STRETCH",
+      "absoluteBoundingBox": { "x": 24, "y": 422, "width": 342, "height": 52 },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }],
+      "cornerRadius": 10,
+      "layoutMode": "HORIZONTAL",
+      "primaryAxisAlignItems": "CENTER",
+      "counterAxisAlignItems": "CENTER",
+      "paddingTop": 16,
+      "paddingRight": 16,
+      "paddingBottom": 16,
+      "paddingLeft": 16,
+      "children": [
+        {
+          "id": "3:10",
+          "type": "TEXT",
+          "characters": "Sign In",
+          "absoluteBoundingBox": { "x": 175, "y": 438, "width": 60, "height": 20 },
+          "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 600, "lineHeightPx": 19.36 },
+          "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1, "a": 1 } }]
+        }
+      ]
+    },
+    {
+      "id": "3:11",
+      "type": "TEXT",
+      "characters": "Forgot password?",
+      "absoluteBoundingBox": { "x": 140, "y": 490, "width": 110, "height": 20 },
+      "style": { "fontFamily": "Inter", "fontSize": 14, "fontWeight": 500, "lineHeightPx": 16.94, "textAlignHorizontal": "CENTER" },
+      "fills": [{ "type": "SOLID", "color": { "r": 0.365, "g": 0.69, "b": 0.459, "a": 1 } }]
+    }
+  ]
+}

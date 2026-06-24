@@ -30,6 +30,25 @@ typography reproduce the source; the avatar photo and status-bar icons are
 fetched from Figma's image API only on a live `--figma-url` run, so they appear
 blank when generating from a saved node dump.
 
+### More demos
+
+Three structurally different screens generated from the bundled inputs in
+[`examples/`](examples/) — a centered form, a grid, and a list — exercising
+auto-layout, `spaceBetween` rows, per-child fill (`layoutAlign`), nested
+`Row`/`Column`, dividers, corner radius, and real fonts:
+
+<p align="center">
+  <img src="docs/demo_login.png" width="240" alt="Login screen" />
+  <img src="docs/demo_product_grid.png" width="240" alt="Product grid screen" />
+  <img src="docs/demo_settings.png" width="240" alt="Settings screen" />
+</p>
+
+```bash
+python -m agent.cli --input examples/figma_login.json        --output flutter_app/lib/login.dart
+python -m agent.cli --input examples/figma_product_grid.json --output flutter_app/lib/shop.dart
+python -m agent.cli --input examples/figma_settings.json     --output flutter_app/lib/settings.dart
+```
+
 ## Pipeline
 
 ```
