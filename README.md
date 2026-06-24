@@ -49,6 +49,19 @@ python -m agent.cli --input examples/figma_product_grid.json --output flutter_ap
 python -m agent.cli --input examples/figma_settings.json     --output flutter_app/lib/settings.dart
 ```
 
+### Real-screen generalization
+
+Validated end-to-end on two structurally different *live* Figma nodes (fetched
+via the REST API, icons rasterized through the image API): a profile screen
+(visual score 87) and this feed screen (score **90**, per-node geometry within
+**1.2px max / 0.2px mean** of Figma's layout — `flutter analyze` clean, no
+overflow):
+
+<p align="center">
+  <img src="docs/real_feed_reference.png" width="260" alt="Figma feed (source)" />
+  <img src="docs/real_feed_render.png" width="260" alt="Generated feed (Flutter)" />
+</p>
+
 ## Pipeline
 
 ```
@@ -164,8 +177,9 @@ underlying data report `n/a` rather than a fabricated number.
   (`--repair`). Structure, geometry, and tokens stay rule-based. `--llm` does
   single-level flow inference per frame (nested regrouping is future work);
   DeepSeek v4 is text-only, so it does not consume the visual/geometry diffs.
-- **Diagonal vectors** (arbitrary path geometry) are skipped — only axis-aligned
-  lines and rounded-rect vectors are reproduced.
+- **Diagonal vectors, boolean operations** (arbitrary path geometry) are skipped
+  with a warning (non-fatal) — only axis-aligned lines and rounded-rect vectors
+  are reproduced.
 - **Icon rasterization** needs a live `--figma-url` (file key + token); a
   saved-file run emits same-size placeholders so layout stays correct.
 - Single mobile-portrait viewport; no interactions, state, or responsive
