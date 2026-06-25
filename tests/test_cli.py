@@ -39,6 +39,18 @@ ROOT = Path(__file__).resolve().parent.parent
 SAMPLE = ROOT / "examples" / "figma_sample.json"
 
 
+# The real formatter, captured before the autouse fixture stubs it out, so the
+# formatting tests below can exercise it directly.
+_REAL_FORMAT_OUTPUT = cli._format_output
+
+
+@pytest.fixture(autouse=True)
+def _no_dart_format(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Stub out the `dart format` pass so CLI tests stay deterministic and
+    never shell out. Tests that exercise formatting patch it back."""
+    monkeypatch.setattr(cli, "_format_output", lambda _path: None)
+
+
 def _stack_input(tmp_path: Path) -> Path:
     """Write a Figma file whose inner 'Panel' frame has no auto-layout, so the
     parser lowers it to a Stack — the case --llm layout inference targets."""
@@ -819,3 +831,38 @@ def test_visual_validate_skips_without_reference(
     )
     assert rc == 0
     assert "needs --reference-image or --figma-url" in capsys.readouterr().err
+
+
+def test_generated_output_is_formatted(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The generation path runs the file through dart format so output is
+    readable regardless of source (closes the 'one long line' gap)."""
+    calls: list[Path] = []
+    monkeypatch.setattr(validator, "format_file", lambda p: calls.append(p) or True)
+    monkeypatch.setattr(cli, "_format_output", _REAL_FORMAT_OUTPUT)
+
+    out = tmp_path / "out.dart"
+    rc = cli.main(["--input", str(SAMPLE), "--output", str(out)])
+    assert rc == 0
+    assert calls == [out]
+
+
+def test_format_output_non_fatal_without_dart(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A missing `dart` CLI must warn and continue, never crash."""
+    def _raise(_path: object) -> bool:
+        raise FileNotFoundError("dart")
+
+    monkeypatch.setattr(validator, "format_file", _raise)
+    _REAL_FORMAT_OUTPUT(Path("out.dart"))  # does not raise
+    assert "dart CLI not found" in capsys.readouterr().err
+
+
+def test_format_output_warns_on_format_error(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(validator, "format_file", lambda _p: False)
+    _REAL_FORMAT_OUTPUT(Path("out.dart"))
+    assert "dart format reported an error" in capsys.readouterr().err

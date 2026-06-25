@@ -93,3 +93,24 @@ def test_validation_result_fields() -> None:
     r = ValidationResult(success=True, raw_log="ok")
     assert r.success is True
     assert r.raw_log == "ok"
+
+
+def test_format_file_invokes_dart_format(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        captured["cmd"] = cmd
+        return subprocess.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    assert validator.format_file("lib/generated_screen.dart") is True
+    assert captured["cmd"] == ["dart", "format", "lib/generated_screen.dart"]
+
+
+def test_format_file_returns_false_on_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, **kw: subprocess.CompletedProcess(cmd, 65, "", "err"),
+    )
+    assert validator.format_file("x.dart") is False

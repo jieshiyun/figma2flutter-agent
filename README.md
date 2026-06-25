@@ -6,9 +6,10 @@ Convert a Figma mobile screen into maintainable Flutter UI code.
 
 `figma-flutter-codegen` is a small, deterministic pipeline: it reads a Figma node
 (a local JSON file or a live node URL), lowers it to a compact Design IR, plans
-reusable components, and emits readable Dart. Optional layers validate the
-output with `flutter analyze`, diff the render against Figma for fidelity, and
-repair regressions.
+reusable components, and emits readable Dart (every generated file is passed
+through `dart format`). Optional layers validate the output with
+`flutter analyze`, diff the render against Figma for fidelity, and repair
+regressions.
 
 > Scope: Flutter only, mobile portrait, static layout. See
 > [ARCHITECTURE.md](ARCHITECTURE.md) for the design rationale and

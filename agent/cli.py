@@ -362,6 +362,23 @@ def _run_validate(flutter_root: str) -> ValidationResult | None:
         return None
 
 
+def _format_output(out_path: Path) -> None:
+    """Run `dart format` on the generated file so output is readable
+    regardless of source. Non-fatal: a missing `dart` CLI or a format
+    error warns and leaves the (already analyzer-valid) file as-is."""
+    try:
+        if not validator.format_file(out_path):
+            print(
+                "warning: dart format reported an error; output left unformatted",
+                file=sys.stderr,
+            )
+    except FileNotFoundError:
+        print(
+            "warning: dart CLI not found on PATH; skipping format",
+            file=sys.stderr,
+        )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="agent.cli",
@@ -512,6 +529,7 @@ def main(argv: list[str] | None = None) -> int:
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(dart)
+    _format_output(out_path)
     plan_path = out_path.parent / "component_plan.generated.json"
     plan_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False))
     print(f"Generated: {out_path}")
@@ -578,6 +596,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"error: repair failed: {exc}", file=sys.stderr)
                 return 2
             out_path.write_text(dart)
+            _format_output(out_path)
             print(f"Generated: {out_path}")
             if logger:
                 logger.save_generated_after(dart)

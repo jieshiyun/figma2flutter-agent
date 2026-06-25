@@ -12,10 +12,26 @@ abstract final class AppColors {
 }
 
 abstract final class AppTextStyles {
-  static const TextStyle inters14w400 = TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w400);
-  static const TextStyle inters16w500 = TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w500);
-  static const TextStyle inters16w600 = TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w600);
-  static const TextStyle inters30w600 = TextStyle(fontFamily: 'Inter', fontSize: 30, fontWeight: FontWeight.w600);
+  static const TextStyle inters14w400 = TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
+  static const TextStyle inters16w500 = TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+  );
+  static const TextStyle inters16w600 = TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle inters30w600 = TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 30,
+    fontWeight: FontWeight.w600,
+  );
 }
 
 class ProfilePosts extends StatelessWidget {
@@ -45,33 +61,14 @@ class ProfilePosts extends StatelessWidget {
                 height: 158,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.white,
-                    width: 4,
-                  ),
+                  border: Border.all(color: AppColors.white, width: 4),
                 ),
               ),
             ),
-            Positioned(
-              left: 0,
-              top: 0,
-              child: const IOSStatusBarWhite(),
-            ),
-            Positioned(
-              left: 16,
-              top: 60,
-              child: const PageHeader(),
-            ),
-            Positioned(
-              left: 52,
-              top: 302,
-              child: const NameBio(),
-            ),
-            Positioned(
-              left: 16,
-              top: 389,
-              child: const SegmentedControlLeft(),
-            ),
+            Positioned(left: 0, top: 0, child: const IOSStatusBarWhite()),
+            Positioned(left: 16, top: 60, child: const PageHeader()),
+            Positioned(left: 52, top: 302, child: const NameBio()),
+            Positioned(left: 16, top: 389, child: const SegmentedControlLeft()),
             Positioned(
               left: 16,
               top: 455,
@@ -92,11 +89,7 @@ class ProfilePosts extends StatelessWidget {
               top: 734,
               child: const ContentContentBlockSmall(),
             ),
-            Positioned(
-              left: 0,
-              top: 729,
-              child: const IOSBottomBar5Tabs(),
-            ),
+            Positioned(left: 0, top: 729, child: const IOSBottomBar5Tabs()),
           ],
         ),
       ),
@@ -114,14 +107,7 @@ class BG extends StatelessWidget {
       height: 46,
       child: Stack(
         children: [
-          Positioned(
-            left: 78,
-            top: 0,
-            child: SizedBox(
-              width: 219,
-              height: 30,
-            ),
-          ),
+          Positioned(left: 78, top: 0, child: SizedBox(width: 219, height: 30)),
         ],
       ),
     );
@@ -141,18 +127,12 @@ class Battery extends StatelessWidget {
           Positioned(
             left: 0,
             top: 0,
-            child: SizedBox(
-              width: 22,
-              height: 11.333333015441895,
-            ),
+            child: SizedBox(width: 22, height: 11.333333015441895),
           ),
           Positioned(
             left: 23,
             top: 3.6666717529296875,
-            child: SizedBox(
-              width: 1.328037977218628,
-              height: 4,
-            ),
+            child: SizedBox(width: 1.328037977218628, height: 4),
           ),
           Positioned(
             left: 2,
@@ -206,10 +186,7 @@ class LeftSide extends StatelessWidget {
           Positioned(
             left: 0,
             top: 0,
-            child: SizedBox(
-              width: 28.42616844177246,
-              height: 11.0888671875,
-            ),
+            child: SizedBox(width: 28.42616844177246, height: 11.0888671875),
           ),
         ],
       ),
@@ -227,11 +204,7 @@ class IOSStatusBarBlack extends StatelessWidget {
       height: 44,
       child: Stack(
         children: [
-          Positioned(
-            left: 0,
-            top: -2,
-            child: const BG(),
-          ),
+          Positioned(left: 0, top: -2, child: const BG()),
           Positioned(
             left: 293.666748046875,
             top: 17.3306884765625,
@@ -258,11 +231,7 @@ class IOSStatusBarWhite extends StatelessWidget {
       height: 44,
       child: Stack(
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            child: const IOSStatusBarBlack(),
-          ),
+          Positioned(left: 0, top: 0, child: const IOSStatusBarBlack()),
         ],
       ),
     );
@@ -284,7 +253,10 @@ class PageHeader extends StatelessWidget {
             top: 8,
             child: Text(
               'Logout',
-              style: AppTextStyles.inters16w500.copyWith(color: AppColors.white, height: 1.21),
+              style: AppTextStyles.inters16w500.copyWith(
+                color: AppColors.white,
+                height: 1.21,
+              ),
               textAlign: TextAlign.right,
             ),
           ),
@@ -293,7 +265,10 @@ class PageHeader extends StatelessWidget {
             top: 0,
             child: Text(
               'Profile',
-              style: AppTextStyles.inters30w600.copyWith(color: AppColors.white, height: 1.21),
+              style: AppTextStyles.inters30w600.copyWith(
+                color: AppColors.white,
+                height: 1.21,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -302,7 +277,10 @@ class PageHeader extends StatelessWidget {
             top: 8,
             child: Text(
               'Settings',
-              style: AppTextStyles.inters16w500.copyWith(color: AppColors.white, height: 1.21),
+              style: AppTextStyles.inters16w500.copyWith(
+                color: AppColors.white,
+                height: 1.21,
+              ),
               textAlign: TextAlign.left,
             ),
           ),
@@ -327,7 +305,10 @@ class NameBio extends StatelessWidget {
             top: 0,
             child: Text(
               'Victoria Robertson',
-              style: AppTextStyles.inters30w600.copyWith(color: AppColors.black, height: 1.21),
+              style: AppTextStyles.inters30w600.copyWith(
+                color: AppColors.black,
+                height: 1.21,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -336,7 +317,10 @@ class NameBio extends StatelessWidget {
             top: 44,
             child: Text(
               'A mantra goes here',
-              style: AppTextStyles.inters16w600.copyWith(color: AppColors.black, height: 1.21),
+              style: AppTextStyles.inters16w600.copyWith(
+                color: AppColors.black,
+                height: 1.21,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -354,9 +338,7 @@ class LeftSelected extends StatelessWidget {
     return Container(
       width: 171.5,
       height: 46,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
       child: Stack(
         children: [
           Positioned(
@@ -376,7 +358,10 @@ class LeftSelected extends StatelessWidget {
             top: 14,
             child: Text(
               'Posts',
-              style: AppTextStyles.inters16w600.copyWith(color: AppColors.greenPrimary, height: 1.21),
+              style: AppTextStyles.inters16w600.copyWith(
+                color: AppColors.greenPrimary,
+                height: 1.21,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -405,10 +390,7 @@ class SegmentedControlStructure extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.gray01,
                 borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                  color: AppColors.gray02,
-                  width: 1,
-                ),
+                border: Border.all(color: AppColors.gray02, width: 1),
               ),
             ),
           ),
@@ -417,7 +399,10 @@ class SegmentedControlStructure extends StatelessWidget {
             top: 16,
             child: Text(
               'Photos',
-              style: AppTextStyles.inters16w500.copyWith(color: AppColors.gray03, height: 1.21),
+              style: AppTextStyles.inters16w500.copyWith(
+                color: AppColors.gray03,
+                height: 1.21,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -426,15 +411,14 @@ class SegmentedControlStructure extends StatelessWidget {
             top: 16,
             child: Text(
               'Search',
-              style: AppTextStyles.inters16w500.copyWith(color: AppColors.gray03, height: 1.21),
+              style: AppTextStyles.inters16w500.copyWith(
+                color: AppColors.gray03,
+                height: 1.21,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
-          Positioned(
-            left: 2,
-            top: 2,
-            child: const LeftSelected(),
-          ),
+          Positioned(left: 2, top: 2, child: const LeftSelected()),
         ],
       ),
     );
@@ -451,11 +435,7 @@ class SegmentedControlLeft extends StatelessWidget {
       height: 50,
       child: Stack(
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            child: const SegmentedControlStructure(),
-          ),
+          Positioned(left: 0, top: 0, child: const SegmentedControlStructure()),
         ],
       ),
     );
@@ -489,7 +469,10 @@ class ContentContentBlockSmall extends StatelessWidget {
             top: 0,
             child: Text(
               'Header',
-              style: AppTextStyles.inters16w600.copyWith(color: AppColors.black, height: 1.21),
+              style: AppTextStyles.inters16w600.copyWith(
+                color: AppColors.black,
+                height: 1.21,
+              ),
               textAlign: TextAlign.left,
             ),
           ),
@@ -498,7 +481,10 @@ class ContentContentBlockSmall extends StatelessWidget {
             top: 2,
             child: Text(
               '8m ago',
-              style: AppTextStyles.inters14w400.copyWith(color: AppColors.gray03, height: 1.21),
+              style: AppTextStyles.inters14w400.copyWith(
+                color: AppColors.gray03,
+                height: 1.21,
+              ),
               textAlign: TextAlign.right,
             ),
           ),
@@ -509,7 +495,10 @@ class ContentContentBlockSmall extends StatelessWidget {
               width: 269,
               child: Text(
                 'He\'ll want to use your yacht, and I don\'t want this thing smelling like fish.',
-                style: AppTextStyles.inters14w400.copyWith(color: AppColors.black, height: 1.21),
+                style: AppTextStyles.inters14w400.copyWith(
+                  color: AppColors.black,
+                  height: 1.21,
+                ),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -517,11 +506,7 @@ class ContentContentBlockSmall extends StatelessWidget {
           Positioned(
             left: 66,
             top: 76.99997578388889,
-            child: Container(
-              width: 277,
-              height: 1,
-              color: AppColors.gray02,
-            ),
+            child: Container(width: 277, height: 1, color: AppColors.gray02),
           ),
         ],
       ),
@@ -537,9 +522,7 @@ class HomeIndicator extends StatelessWidget {
     return Container(
       width: 134,
       height: 5,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
       child: Stack(
         children: [
           Positioned(
@@ -573,17 +556,9 @@ class IPhoneUI extends StatelessWidget {
           Positioned(
             left: 0,
             top: 0,
-            child: Container(
-              width: 375,
-              height: 83,
-              color: AppColors.cfafafa,
-            ),
+            child: Container(width: 375, height: 83, color: AppColors.cfafafa),
           ),
-          Positioned(
-            left: 120,
-            top: 69,
-            child: const HomeIndicator(),
-          ),
+          Positioned(left: 120, top: 69, child: const HomeIndicator()),
         ],
       ),
     );
@@ -598,9 +573,7 @@ class Tabs extends StatelessWidget {
     return Container(
       width: 320,
       height: 32,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
       child: Stack(
         children: [
           Positioned(
@@ -679,24 +652,12 @@ class IOSBottomBar5Tabs extends StatelessWidget {
       height: 83.5,
       child: Stack(
         children: [
-          Positioned(
-            left: 0,
-            top: 0.5,
-            child: const IPhoneUI(),
-          ),
-          Positioned(
-            left: 26,
-            top: 15,
-            child: const Tabs(),
-          ),
+          Positioned(left: 0, top: 0.5, child: const IPhoneUI()),
+          Positioned(left: 26, top: 15, child: const Tabs()),
           Positioned(
             left: 0,
             top: 0,
-            child: Container(
-              width: 375,
-              height: 0.5,
-              color: AppColors.cbdc5cd,
-            ),
+            child: Container(width: 375, height: 0.5, color: AppColors.cbdc5cd),
           ),
         ],
       ),
