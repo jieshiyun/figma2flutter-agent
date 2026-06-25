@@ -83,7 +83,17 @@ Figma JSON ─► Design IR ─► Component Plan ─► Flutter code ─► val
 
 ## Quickstart
 
-Run from source — the only runtime dependencies are Pillow and numpy:
+**One command** (needs Flutter + Python) — regenerate a screen from a fixture,
+analyze it, and smoke-test that it renders, the same sequence CI runs:
+
+```bash
+make demo          # generate -> flutter analyze -> golden smoke test
+make help          # list all targets (test, generate, demos, clean, ...)
+```
+
+`make demo` writes to a gitignored scratch dir, so nothing committed is touched.
+
+Or run the steps directly — the only runtime dependencies are Pillow and numpy:
 
 ```bash
 pip install pillow numpy pytest

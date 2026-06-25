@@ -17,3 +17,6 @@ flutter_app/.dart_tool/
 flutter_app/build/
 flutter_app/.flutter-plugins
 flutter_app/.flutter-plugins-dependencies
+
+# make demo / make demos scratch output
+flutter_app/lib/generated/
