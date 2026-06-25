@@ -3,13 +3,13 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "figma2flutter-agent"
-version = "0.1.0"
+name = "figma-flutter-codegen"
+version = "0.2.0"
 description = "AI-assisted pipeline that converts a Figma mobile screen into Flutter UI code."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{ name = "jieshiyun" }]
+authors = [{ name = "Krystal" }]
 dependencies = [
     # Visual validation (--visual-validate): PNG decode + diff/SSIM metrics.
     "pillow>=10",
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jieshiyun/figma2flutter-agent"
+Homepage = "https://github.com/KrystalJie/figma-flutter-codegen"
 
 [project.scripts]
 figma2flutter = "agent.cli:main"

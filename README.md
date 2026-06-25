@@ -1,10 +1,10 @@
-# figma2flutter-agent
+# figma-flutter-codegen
 
-[![CI](https://github.com/jieshiyun/figma2flutter-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/jieshiyun/figma2flutter-agent/actions/workflows/ci.yml)
+[![CI](https://github.com/KrystalJie/figma-flutter-codegen/actions/workflows/ci.yml/badge.svg)](https://github.com/KrystalJie/figma-flutter-codegen/actions/workflows/ci.yml)
 
 Convert a Figma mobile screen into maintainable Flutter UI code.
 
-`figma2flutter-agent` is a small, deterministic pipeline: it reads a Figma node
+`figma-flutter-codegen` is a small, deterministic pipeline: it reads a Figma node
 (a local JSON file or a live node URL), lowers it to a compact Design IR, plans
 reusable components, and emits readable Dart. Optional layers validate the
 output with `flutter analyze`, diff the render against Figma for fidelity, and
@@ -86,7 +86,7 @@ Run from source — the only runtime dependencies are Pillow and numpy:
 
 ```bash
 pip install pillow numpy pytest
-pytest                    # 259 tests, no network or Flutter required
+pytest                    # 261 tests, no network or Flutter required
 
 # Generate a screen from the bundled sample:
 python -m agent.cli \
@@ -228,7 +228,7 @@ agent/       pipeline modules (cli, figma_client, ir_parser, planner, codegen,
 schemas/     Design IR + Component Plan JSON schemas
 examples/    sample Figma JSON, sample Design IR, sample generated Dart
 flutter_app/ Flutter gallery app (target for generated code)
-tests/       pytest suite (259 tests; network and Flutter are mocked)
+tests/       pytest suite (261 tests; network and Flutter are mocked)
 ```
 
 ## License

@@ -1,6 +1,6 @@
 # Architecture
 
-This document explains *why* `figma2flutter-agent` is built the way it is. For
+This document explains *why* `figma-flutter-codegen` is built the way it is. For
 usage see [README.md](README.md); for the chronological build log see
 [CLAUDE.md](CLAUDE.md).
 
@@ -16,7 +16,7 @@ the whole pipeline depends on.
 
 This buys three things that matter for a code-generation tool: **reproducibility**
 (byte-identical output, snapshot-tested), **trust** (you can read and diff the
-result), and **testability** (259 tests, zero network, Flutter mocked).
+result), and **testability** (261 tests, zero network, Flutter mocked).
 
 ## Pipeline
 
@@ -117,7 +117,7 @@ See the [Repair Agent roadmap](README.md#roadmap-repair-agent) for status.
 ## Testing strategy
 
 - **No network, no Flutter, in the unit suite.** The LLM client is a protocol;
-  tests inject a fake. Figma fetches are mocked. 259 tests run in <1s.
+  tests inject a fake. Figma fetches are mocked. 261 tests run in <1s.
 - **Snapshot tests** pin the generated Dart byte-for-byte, so any codegen change
   is a visible diff and new features must prove backward compatibility.
 - **Geometry diff as a font-independent gate** catches gross layout/color

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'demos/login.dart' as login;
 import 'demos/profile_posts.dart' as profile;
+import 'demos/settings.dart' as settings;
+import 'demos/shop.dart' as shop;
 import 'demos/simple_sample.dart' as simple;
 
 void main() {
@@ -40,6 +43,21 @@ final List<DemoEntry> demos = <DemoEntry>[
     'Simple Sample',
     'Basic auto-layout screen from figma_sample.json',
     (_) => const simple.ProfileScreen(),
+  ),
+  DemoEntry(
+    'Login',
+    'Centered form — fields/button fill width (layoutAlign)',
+    (_) => const login.LoginScreen(),
+  ),
+  DemoEntry(
+    'Shop / Product grid',
+    '2×2 card grid — Row of Columns, prices, corner radius',
+    (_) => const shop.ShopScreen(),
+  ),
+  DemoEntry(
+    'Settings',
+    'Grouped cards — spaceBetween rows, dividers',
+    (_) => const settings.SettingsScreen(),
   ),
 ];
 

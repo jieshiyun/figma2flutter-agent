@@ -52,7 +52,7 @@ Prefer simple files, clear boundaries, and testable functions.
 
 ## Expected Repository Structure
 
-figma2flutter-agent/
+figma-flutter-codegen/
 ├── agent/
 │   ├── cli.py
 │   ├── figma_client.py
