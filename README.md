@@ -98,7 +98,7 @@ Or run the steps directly — the only runtime dependencies are Pillow and numpy
 
 ```bash
 pip install pillow numpy pytest
-pytest                    # 266 tests, no network or Flutter required
+pytest                    # 268 tests, no network or Flutter required
 
 # Generate a screen from the bundled sample:
 python -m agent.cli \
@@ -252,7 +252,7 @@ agent/       pipeline modules (cli, figma_client, ir_parser, planner, codegen,
 schemas/     Design IR + Component Plan JSON schemas
 examples/    sample Figma JSON, sample Design IR, sample generated Dart
 flutter_app/ Flutter gallery app (target for generated code)
-tests/       pytest suite (261 tests; network and Flutter are mocked)
+tests/       pytest suite (268 tests; network and Flutter are mocked)
 ```
 
 ## License
